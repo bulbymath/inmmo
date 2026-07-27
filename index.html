@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>INMMO | International Noted Meniner Mathematical Olympiad</title>
     <!-- Site Tab Logo / Favicon -->
-    <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Crect width='100' height='100' rx='22' fill='%2309090b' stroke='%23eab308' stroke-width='5'/%3E%3Ctext x='40' y='68' font-family='serif' font-weight='bold' font-size='52' fill='%23facc15' text-anchor='middle'%3E𝔐%3C/text%3E%3Ctext x='72' y='42' font-family='sans-serif' font-size='30' font-weight='bold' fill='%23fde047'%3E♮%3C/text%3E%3C/svg%3E">
+    <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Crect width='100' height='100' rx='22' fill='%2309090b' stroke='%23ff5500' stroke-width='5'/%3E%3Ctext x='40' y='68' font-family='serif' font-weight='bold' font-size='52' fill='%23ff6600' text-anchor='middle'%3E𝔐%3C/text%3E%3Ctext x='72' y='42' font-family='sans-serif' font-size='30' font-weight='bold' fill='%23ff9900'%3E♮%3C/text%3E%3C/svg%3E">
     <!-- Tailwind CSS -->
     <script src="https://cdn.tailwindcss.com"></script>
     <!-- Google Fonts -->
@@ -38,12 +38,20 @@
                             700: '#a16207',
                             900: '#713f12',
                             glow: 'rgba(234, 179, 8, 0.25)',
+                        },
+                        neonOrange: {
+                            400: '#ff7700',
+                            500: '#ff5500',
+                            600: '#e64a00',
+                            glow: 'rgba(255, 85, 0, 0.5)',
                         }
                     },
                     boxShadow: {
                         'gold-glow': '0 0 25px rgba(234, 179, 8, 0.2)',
                         'gold-glow-lg': '0 0 40px rgba(234, 179, 8, 0.35)',
                         'gold-glow-inner': 'inset 0 0 20px rgba(234, 179, 8, 0.1)',
+                        'orange-glow': '0 0 30px rgba(255, 85, 0, 0.5)',
+                        'orange-glow-lg': '0 0 50px rgba(255, 85, 0, 0.75)',
                         'blue-glow': '0 0 30px rgba(59, 130, 246, 0.4)',
                         'red-glow': '0 0 30px rgba(239, 68, 68, 0.4)',
                     }
@@ -71,7 +79,7 @@
             transform: translateY(0);
         }
 
-        /* Canvas element positioning */
+        /* Canvas element positioning - Elevated z-index so particles render over glass panels */
         #vfx-canvas {
             position: fixed;
             top: 0;
@@ -79,7 +87,7 @@
             width: 100vw;
             height: 100vh;
             pointer-events: none;
-            z-index: 0;
+            z-index: 20;
             transition: z-index 0s;
         }
 
@@ -98,6 +106,14 @@
             animation: pulseGlow 3s infinite ease-in-out;
         }
 
+        @keyframes slowSpin {
+            from { transform: rotate(0deg); }
+            to { transform: rotate(360deg); }
+        }
+        .animate-slow-spin {
+            animation: slowSpin 25s linear infinite;
+        }
+
         .glass-panel {
             background: linear-gradient(135deg, rgba(24, 24, 27, 0.8), rgba(9, 9, 11, 0.95));
             backdrop-filter: blur(12px);
@@ -112,15 +128,31 @@
             from { opacity: 0; transform: scale(0.98); }
             to { opacity: 1; transform: scale(1); }
         }
+
+        /* Floating Clicker Text */
+        .click-text {
+            position: absolute;
+            pointer-events: none;
+            font-family: 'JetBrains Mono', monospace;
+            font-weight: bold;
+            color: #ff7700;
+            text-shadow: 0 0 12px rgba(255, 85, 0, 0.9);
+            animation: floatUp 0.9s ease-out forwards;
+            z-index: 50;
+        }
+        @keyframes floatUp {
+            0% { opacity: 1; transform: translateY(0) scale(1); }
+            100% { opacity: 0; transform: translateY(-75px) scale(1.3); }
+        }
     </style>
 </head>
 <body class="bg-zinc-950 text-zinc-100 font-sans antialiased min-h-screen flex flex-col selection:bg-gold-500/30 selection:text-gold-300 relative">
 
-    <!-- Interactive Comet & Particle Canvas Background -->
+    <!-- Interactive Comet & Particle Canvas Background (Rendered above cards) -->
     <canvas id="vfx-canvas"></canvas>
 
-    <!-- MAIN APP CONTAINER (Hidden during teleportation/stats view) -->
-    <div id="main-app">
+    <!-- MAIN APP CONTAINER -->
+    <div id="main-app" class="relative z-10">
         <!-- Header Navigation -->
         <header class="glass-panel border-b border-zinc-800/80 sticky top-0 z-40 transition-all shadow-xl">
             <div class="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -147,6 +179,9 @@
                         <button onclick="switchTab('home')" id="btn-home" class="tab-btn px-4 py-2 rounded-lg font-medium text-xs font-mono uppercase tracking-wider text-zinc-400 hover:text-white transition-all hover:bg-zinc-800/50">Overview</button>
                         <button onclick="switchTab('papers')" id="btn-papers" class="tab-btn px-4 py-2 rounded-lg font-medium text-xs font-mono uppercase tracking-wider text-zinc-400 hover:text-white transition-all hover:bg-zinc-800/50">Papers & Solutions</button>
                         <button onclick="switchTab('theory')" id="btn-theory" class="tab-btn px-4 py-2 rounded-lg font-medium text-xs font-mono uppercase tracking-wider text-zinc-400 hover:text-white transition-all hover:bg-zinc-800/50">Meniner Theory</button>
+                        <button onclick="switchTab('clicker')" id="btn-clicker" class="tab-btn px-4 py-2 rounded-lg font-medium text-xs font-mono uppercase tracking-wider text-neonOrange-400 hover:text-white transition-all hover:bg-zinc-800/50 flex items-center space-x-1.5">
+                            <span>⚡ Clicker</span>
+                        </button>
                         <button onclick="switchTab('winners')" id="btn-winners" class="tab-btn px-4 py-2 rounded-lg font-medium text-xs font-mono uppercase tracking-wider text-zinc-400 hover:text-white transition-all hover:bg-zinc-800/50 flex items-center space-x-1.5">
                             <span class="w-1.5 h-1.5 rounded-full bg-gold-400 animate-ping"></span>
                             <span>Leaderboard</span>
@@ -160,6 +195,7 @@
                 <button onclick="switchTab('home')" id="btn-home-mobile" class="tab-btn-mobile text-xs font-mono uppercase tracking-wider px-3 py-1.5 rounded-lg text-zinc-400 bg-zinc-900">Overview</button>
                 <button onclick="switchTab('papers')" id="btn-papers-mobile" class="tab-btn-mobile text-xs font-mono uppercase tracking-wider px-3 py-1.5 rounded-lg text-zinc-400">Papers</button>
                 <button onclick="switchTab('theory')" id="btn-theory-mobile" class="tab-btn-mobile text-xs font-mono uppercase tracking-wider px-3 py-1.5 rounded-lg text-zinc-400">Theory</button>
+                <button onclick="switchTab('clicker')" id="btn-clicker-mobile" class="tab-btn-mobile text-xs font-mono uppercase tracking-wider px-3 py-1.5 rounded-lg text-neonOrange-400">Clicker</button>
                 <button onclick="switchTab('winners')" id="btn-winners-mobile" class="tab-btn-mobile text-xs font-mono uppercase tracking-wider px-3 py-1.5 rounded-lg text-zinc-400">Leaderboard</button>
             </div>
         </header>
@@ -298,6 +334,131 @@
                 </div>
             </div>
 
+            <!-- MENINER CLICKER MINIGAME TAB -->
+            <div id="clicker" class="tab-content">
+                <div class="mb-6 flex flex-col md:flex-row md:items-end justify-between border-b border-zinc-800/80 pb-6 gap-4">
+                    <div>
+                        <h2 class="text-3xl font-serif font-bold text-white flex items-center">
+                            <span>Meniner Harmonic Clicker</span>
+                            <span class="ml-3 px-2 py-0.5 text-xs font-mono bg-orange-500/20 text-neonOrange-400 border border-orange-500/40 rounded uppercase">v1.1</span>
+                        </h2>
+                        <p class="text-zinc-400 text-sm mt-1">Synthesize notes ($\text{N}_{\natural}$) via the spinning Neon Orange Noted Clicker.</p>
+                    </div>
+
+                    <!-- Save / Export Controls -->
+                    <div class="flex flex-wrap items-center gap-2">
+                        <button onclick="saveGame(true)" class="px-3 py-1.5 bg-zinc-900 hover:bg-zinc-800 text-zinc-300 border border-zinc-700 rounded-lg text-xs font-mono uppercase tracking-wider transition-colors">
+                            💾 Save Game
+                        </button>
+                        <button onclick="exportSave()" class="px-3 py-1.5 bg-zinc-900 hover:bg-zinc-800 text-neonOrange-400 border border-orange-500/30 rounded-lg text-xs font-mono uppercase tracking-wider transition-colors">
+                            📤 Export TXT
+                        </button>
+                        <button onclick="openImportModal()" class="px-3 py-1.5 bg-zinc-900 hover:bg-zinc-800 text-indigo-400 border border-indigo-500/30 rounded-lg text-xs font-mono uppercase tracking-wider transition-colors">
+                            📥 Import TXT
+                        </button>
+                    </div>
+                </div>
+
+                <div class="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
+                    
+                    <!-- Left: Clicker Arena -->
+                    <div class="lg:col-span-7 glass-panel p-8 rounded-3xl border border-zinc-800 text-center relative overflow-hidden flex flex-col items-center justify-center min-h-[500px]">
+                        <!-- Counter HUD -->
+                        <div class="mb-6 z-10">
+                            <div class="text-xs font-mono text-neonOrange-400 uppercase tracking-widest mb-1">Synthesized Harmonic Notes</div>
+                            <div id="notes-counter" class="text-5xl font-mono font-black text-white tracking-tight">0 <span class="text-xl text-neonOrange-400 font-normal">N♮</span></div>
+                            <div id="nps-counter" class="text-xs font-mono text-zinc-400 mt-1">Production Rate: 0.0 N♮ / sec</div>
+                        </div>
+
+                        <!-- Central SPINNING Wheel with Neon Orange Clicker and Rectangular Seated Factories -->
+                        <div id="clicker-arena" class="relative my-8 w-72 h-72 flex items-center justify-center select-none">
+                            
+                            <!-- Spinning Wheel Outer Container -->
+                            <div id="spinning-wheel" class="absolute inset-0 rounded-full border border-dashed border-orange-500/30 animate-slow-spin flex items-center justify-center pointer-events-none">
+                                <!-- Seated Rectangular Factories will render here via JS -->
+                                <div id="factory-rect-container" class="absolute inset-0 pointer-events-none"></div>
+                            </div>
+
+                            <!-- Central Neon Orange Clickable Button -->
+                            <button id="big-meniner-btn" onclick="clickMeniner(event)" class="relative z-20 w-44 h-44 rounded-full bg-gradient-to-br from-zinc-950 via-zinc-900 to-black border-2 border-orange-500/80 shadow-orange-glow-lg active:scale-95 transition-transform duration-100 flex items-center justify-center group focus:outline-none cursor-pointer">
+                                <div class="absolute inset-2 rounded-full border border-orange-500/30 group-hover:border-orange-400/80 transition-colors"></div>
+                                <span class="font-fraktur text-7xl text-neonOrange-500 group-hover:scale-110 transition-transform select-none drop-shadow-[0_0_20px_rgba(255,85,0,0.95)]">
+                                    &#x1D510;<span class="font-sans text-2xl text-orange-300 ml-0.5 relative -top-6">♮</span>
+                                </span>
+                            </button>
+                        </div>
+
+                        <p class="text-xs font-mono text-zinc-500 z-10">Click the spinning Neon Orange Noted Meniner to synthesize notes.</p>
+                    </div>
+
+                    <!-- Right: Factory Upgrades Shop -->
+                    <div class="lg:col-span-5 space-y-4">
+                        <div class="glass-panel p-5 rounded-2xl border border-zinc-800">
+                            <h3 class="text-sm font-mono font-bold text-white uppercase tracking-wider mb-4 flex items-center">
+                                <span class="text-neonOrange-400 mr-2">🏭</span> Meniner Industrial Upgrades
+                            </h3>
+
+                            <div class="space-y-3">
+                                <!-- Bronze Factory -->
+                                <div class="p-4 rounded-xl bg-zinc-900/80 border border-zinc-800 hover:border-amber-700/50 transition-all flex items-center justify-between">
+                                    <div>
+                                        <div class="flex items-center space-x-2">
+                                            <span class="text-amber-600 font-bold text-base">🟤 Bronze Meniner</span>
+                                            <span id="bronze-count" class="px-2 py-0.5 bg-amber-950 text-amber-400 text-[10px] font-mono font-bold rounded">x0</span>
+                                        </div>
+                                        <div class="text-xs text-zinc-400 mt-0.5">+1.0 N♮ / sec</div>
+                                    </div>
+                                    <button onclick="buyFactory('bronze')" id="btn-buy-bronze" class="px-4 py-2 bg-amber-900/40 hover:bg-amber-800/60 text-amber-200 border border-amber-700/50 rounded-lg text-xs font-mono font-bold transition-colors disabled:opacity-40 disabled:cursor-not-allowed">
+                                        <span id="bronze-cost">15</span> N♮
+                                    </button>
+                                </div>
+
+                                <!-- Silver Factory -->
+                                <div class="p-4 rounded-xl bg-zinc-900/80 border border-zinc-800 hover:border-zinc-400/50 transition-all flex items-center justify-between">
+                                    <div>
+                                        <div class="flex items-center space-x-2">
+                                            <span class="text-zinc-300 font-bold text-base">⚪ Silver Meniner</span>
+                                            <span id="silver-count" class="px-2 py-0.5 bg-zinc-800 text-zinc-300 text-[10px] font-mono font-bold rounded">x0</span>
+                                        </div>
+                                        <div class="text-xs text-zinc-400 mt-0.5">+8.0 N♮ / sec</div>
+                                    </div>
+                                    <button onclick="buyFactory('silver')" id="btn-buy-silver" class="px-4 py-2 bg-zinc-800/60 hover:bg-zinc-700 text-zinc-200 border border-zinc-500/50 rounded-lg text-xs font-mono font-bold transition-colors disabled:opacity-40 disabled:cursor-not-allowed">
+                                        <span id="silver-cost">100</span> N♮
+                                    </button>
+                                </div>
+
+                                <!-- Gold Factory -->
+                                <div class="p-4 rounded-xl bg-zinc-900/80 border border-zinc-800 hover:border-gold-500/50 transition-all flex items-center justify-between">
+                                    <div>
+                                        <div class="flex items-center space-x-2">
+                                            <span class="text-gold-400 font-bold text-base">🟡 Gold Meniner</span>
+                                            <span id="gold-count" class="px-2 py-0.5 bg-gold-900/50 text-gold-300 text-[10px] font-mono font-bold rounded">x0</span>
+                                        </div>
+                                        <div class="text-xs text-zinc-400 mt-0.5">+45.0 N♮ / sec</div>
+                                    </div>
+                                    <button onclick="buyFactory('gold')" id="btn-buy-gold" class="px-4 py-2 bg-gold-500/20 hover:bg-gold-500/40 text-gold-300 border border-gold-500/50 rounded-lg text-xs font-mono font-bold transition-colors disabled:opacity-40 disabled:cursor-not-allowed">
+                                        <span id="gold-cost">1100</span> N♮
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Stats Box -->
+                        <div class="glass-panel p-4 rounded-xl border border-zinc-800 text-xs font-mono text-zinc-400 space-y-1.5">
+                            <div class="flex justify-between">
+                                <span>Total Clicks:</span>
+                                <span id="stat-clicks" class="text-white font-bold">0</span>
+                            </div>
+                            <div class="flex justify-between">
+                                <span>Total Earned:</span>
+                                <span id="stat-earned" class="text-neonOrange-400 font-bold">0 N♮</span>
+                            </div>
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+
             <!-- HALL OF WINNERS / LEADERBOARD TAB -->
             <div id="winners" class="tab-content">
                 <div class="mb-8 border-b border-zinc-800/80 pb-6 flex flex-col md:flex-row md:items-end justify-between gap-4">
@@ -380,9 +541,8 @@
         </footer>
     </div>
 
-    <!-- NEW PAGE: FULL-SCREEN STATS DASHBOARD (Hidden initially) -->
+    <!-- FULL-SCREEN STATS DASHBOARD -->
     <div id="stats-page" class="hidden min-h-screen w-full bg-zinc-950 relative z-10 overflow-y-auto">
-        <!-- Dashboard Header -->
         <div class="w-full bg-zinc-900 border-b border-zinc-800 sticky top-0 z-30 shadow-2xl">
             <div class="max-w-5xl mx-auto px-4 py-4 flex justify-between items-center">
                 <button onclick="returnFromPortal(event)" class="inline-flex items-center text-xs font-mono uppercase tracking-widest text-zinc-400 hover:text-gold-400 transition-colors">
@@ -393,9 +553,7 @@
             </div>
         </div>
 
-        <!-- Dashboard Content -->
         <div class="max-w-4xl mx-auto px-4 py-12">
-            
             <div class="text-center mb-12 fade-in">
                 <h2 class="text-sm font-mono text-gold-400 tracking-[0.3em] uppercase mb-2">Official Inmmo Record</h2>
                 <h1 class="text-4xl md:text-6xl font-serif font-black text-white uppercase tracking-tight">Competitor Scorecard</h1>
@@ -403,26 +561,19 @@
 
             <div class="glass-panel border border-zinc-800 rounded-3xl p-8 md:p-12 shadow-2xl relative overflow-hidden fade-in" style="animation-delay: 0.2s;">
                 <div class="absolute -right-20 -top-20 w-64 h-64 bg-gold-500/5 rounded-full blur-3xl"></div>
-                
-                <!-- Profile Header -->
                 <div class="flex flex-col md:flex-row items-center md:items-start gap-8 mb-12 border-b border-zinc-800/60 pb-12">
-                    <div class="w-32 h-32 bg-gradient-to-br from-gold-400 to-amber-600 rounded-2xl flex items-center justify-center text-6xl shadow-gold-glow flex-shrink-0 cursor-crosshair transform hover:scale-105 transition-transform" onclick="spawnBurst(event)">
-                        🥇
-                    </div>
+                    <div class="w-32 h-32 bg-gradient-to-br from-gold-400 to-amber-600 rounded-2xl flex items-center justify-center text-6xl shadow-gold-glow flex-shrink-0 cursor-crosshair transform hover:scale-105 transition-transform" onclick="spawnBurst(event)">🥇</div>
                     <div class="text-center md:text-left flex-grow">
                         <h3 class="text-4xl font-bold text-white tracking-tight mb-2">the big wait what</h3>
                         <p class="text-lg font-mono text-gold-400 mb-4">AKA banning gran</p>
-                        
                         <div class="flex flex-wrap justify-center md:justify-start gap-3">
                             <span class="px-3 py-1 bg-zinc-900 border border-zinc-700 text-zinc-300 text-xs font-mono rounded-lg">G8 (Rising G9)</span>
                             <span class="px-3 py-1 bg-zinc-900 border border-zinc-700 text-zinc-300 text-xs font-mono rounded-lg">Michigan, USA</span>
                             <span class="inline-flex items-center px-3 py-1 rounded-lg bg-indigo-500/10 text-indigo-400 border border-indigo-500/30 text-xs font-bold uppercase tracking-wider shadow-sm">
-                                <svg class="w-3 h-3 mr-1.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z"></path></svg>
-                                AwesomeMath
+                                <svg class="w-3 h-3 mr-1.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z"></path></svg>AwesomeMath
                             </span>
                         </div>
                     </div>
-                    
                     <div class="bg-zinc-950 border border-gold-500/30 p-6 rounded-2xl text-center shadow-gold-glow-inner min-w-[180px]">
                         <div class="text-xs font-mono text-gold-400 uppercase mb-2">Verified Score</div>
                         <div class="font-black font-mono text-5xl text-gold-300">45<span class="text-xl font-normal text-zinc-600">/48</span></div>
@@ -430,59 +581,55 @@
                     </div>
                 </div>
 
-                <!-- Problem Breakdown -->
                 <div>
                     <h4 class="text-sm font-mono font-bold text-zinc-400 uppercase tracking-widest mb-6 flex items-center">
-                        <span class="w-8 h-px bg-zinc-700 mr-4"></span>
-                        Score Breakdown & Rubric Log
-                        <span class="flex-grow h-px bg-zinc-700 ml-4"></span>
+                        <span class="w-8 h-px bg-zinc-700 mr-4"></span>Score Breakdown & Rubric Log<span class="flex-grow h-px bg-zinc-700 ml-4"></span>
                     </h4>
-                    
                     <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
                         <div class="bg-zinc-900/50 p-4 rounded-xl border border-zinc-800/80 hover:border-gold-500/30 transition-colors">
-                            <div class="flex justify-between items-start mb-2">
-                                <span class="text-sm text-white font-bold">P1: Bret3 Lemma</span>
-                                <span class="font-mono text-gold-400 font-bold">8 / 8</span>
-                            </div>
+                            <div class="flex justify-between items-start mb-2"><span class="text-sm text-white font-bold">P1: Bret3 Lemma</span><span class="font-mono text-gold-400 font-bold">8 / 8</span></div>
                             <p class="text-xs text-zinc-500">+1 Bonus awarded for formal terminology.</p>
                         </div>
                         <div class="bg-zinc-900/50 p-4 rounded-xl border border-zinc-800/80 hover:border-red-500/30 transition-colors">
-                            <div class="flex justify-between items-start mb-2">
-                                <span class="text-sm text-white font-bold">P2: Velocity Harmony</span>
-                                <span class="font-mono text-red-400 font-bold">7 / 8</span>
-                            </div>
+                            <div class="flex justify-between items-start mb-2"><span class="text-sm text-white font-bold">P2: Velocity Harmony</span><span class="font-mono text-red-400 font-bold">7 / 8</span></div>
                             <p class="text-xs text-zinc-500">-1 Penalty: Failed to explicitly name Clites Theorem.</p>
                         </div>
                         <div class="bg-zinc-900/50 p-4 rounded-xl border border-zinc-800/80 hover:border-gold-500/30 transition-colors">
-                            <div class="flex justify-between items-start mb-2">
-                                <span class="text-sm text-white font-bold">P3: Vieta Formulas</span>
-                                <span class="font-mono text-gold-400 font-bold">8 / 8</span>
-                            </div>
+                            <div class="flex justify-between items-start mb-2"><span class="text-sm text-white font-bold">P3: Vieta Formulas</span><span class="font-mono text-gold-400 font-bold">8 / 8</span></div>
                             <p class="text-xs text-zinc-500">+1 Bonus awarded for Theorem 5 invocation.</p>
                         </div>
                         <div class="bg-zinc-900/50 p-4 rounded-xl border border-zinc-800/80 hover:border-gold-500/30 transition-colors">
-                            <div class="flex justify-between items-start mb-2">
-                                <span class="text-sm text-white font-bold">P4: Recurrence</span>
-                                <span class="font-mono text-gold-400 font-bold">8 / 8</span>
-                            </div>
+                            <div class="flex justify-between items-start mb-2"><span class="text-sm text-white font-bold">P4: Recurrence</span><span class="font-mono text-gold-400 font-bold">8 / 8</span></div>
                             <p class="text-xs text-zinc-500">Flawless telescoping sum collapse.</p>
                         </div>
                         <div class="bg-zinc-900/50 p-4 rounded-xl border border-zinc-800/80 hover:border-red-500/30 transition-colors">
-                            <div class="flex justify-between items-start mb-2">
-                                <span class="text-sm text-white font-bold">P5: Board Invariant</span>
-                                <span class="font-mono text-red-400 font-bold">6 / 8</span>
-                            </div>
+                            <div class="flex justify-between items-start mb-2"><span class="text-sm text-white font-bold">P5: Board Invariant</span><span class="font-mono text-red-400 font-bold">6 / 8</span></div>
                             <p class="text-xs text-zinc-500">-2 Penalty: Minor algebraic typo in written proof.</p>
                         </div>
                         <div class="bg-zinc-900/50 p-4 rounded-xl border border-blue-500/20 hover:border-blue-500/50 transition-colors relative overflow-hidden shadow-blue-glow">
                             <div class="absolute inset-0 bg-blue-500/5"></div>
-                            <div class="relative z-10 flex justify-between items-start mb-2">
-                                <span class="text-sm text-white font-bold">P6: Crumlationny</span>
-                                <span class="font-mono text-blue-400 font-bold">8 / 8</span>
-                            </div>
+                            <div class="relative z-10 flex justify-between items-start mb-2"><span class="text-sm text-white font-bold">P6: Crumlationny</span><span class="font-mono text-blue-400 font-bold">8 / 8</span></div>
                             <p class="text-xs text-blue-300/80 relative z-10">+1 Head Grader Override Bonus for elegant AM-GM proof.</p>
                         </div>
                     </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- ENCRYPTED IMPORT MODAL -->
+    <div id="import-modal" class="fixed inset-0 z-50 hidden">
+        <div class="fixed inset-0 bg-zinc-950/80 backdrop-blur-md" onclick="closeImportModal()"></div>
+        <div class="fixed inset-0 z-10 overflow-y-auto flex items-center justify-center p-4">
+            <div class="glass-panel border border-zinc-700 rounded-2xl p-6 w-full max-w-md shadow-2xl relative">
+                <h3 class="text-lg font-bold text-white mb-2">Import Encrypted Save State</h3>
+                <p class="text-xs text-zinc-400 mb-4">Paste your exported <code class="text-neonOrange-400">.txt</code> save code string below:</p>
+                
+                <textarea id="import-input" rows="4" placeholder="MNR1-..." class="w-full bg-zinc-950 border border-zinc-800 rounded-xl p-3 text-xs font-mono text-neonOrange-400 focus:outline-none focus:border-orange-500/50 mb-4 resize-none"></textarea>
+                
+                <div class="flex justify-end space-x-2">
+                    <button onclick="closeImportModal()" class="px-4 py-2 bg-zinc-800 text-zinc-300 hover:bg-zinc-700 text-xs font-mono rounded-lg">Cancel</button>
+                    <button onclick="processImport()" class="px-4 py-2 bg-orange-500 text-zinc-950 font-bold hover:bg-orange-400 text-xs font-mono rounded-lg">Load Save State</button>
                 </div>
             </div>
         </div>
@@ -518,25 +665,23 @@
 
         // Floating Meniner Particle Class
         class MeninerParticle {
-            constructor(x, y, isBurst = false, isPortal = false) {
+            constructor(x, y, isBurst = false, isChimney = false, color = null) {
                 this.isBurst = isBurst;
-                this.isPortal = isPortal;
+                this.isChimney = isChimney;
+                this.customColor = color;
                 this.reset(x, y);
             }
             reset(x, y) {
                 this.x = x !== undefined ? x : Math.random() * width;
                 this.y = y !== undefined ? y : height + Math.random() * 100;
                 
-                if (this.isPortal) {
-                    const angle = Math.random() * Math.PI * 2;
-                    const speed = 1 + Math.random() * 8;
-                    this.vx = Math.cos(angle) * speed;
-                    this.vy = Math.sin(angle) * speed;
-                    this.color = Math.random() > 0.5 ? 'rgba(59, 130, 246,' : 'rgba(239, 68, 68,'; 
-                    this.alpha = 0.9;
-                    this.fontSize = 20 + Math.random() * 40;
-                    this.rot = Math.random() * Math.PI * 2;
-                    this.vrot = (Math.random() - 0.5) * 0.2;
+                if (this.isChimney) {
+                    this.speedY = -(2.0 + Math.random() * 2.5);
+                    this.speedX = (Math.random() - 0.5) * 2.0;
+                    this.fontSize = 14 + Math.random() * 16;
+                    this.alpha = 1.0;
+                    this.life = 1.0;
+                    this.decay = 0.015 + Math.random() * 0.02;
                 } else if (this.isBurst) {
                     const angle = Math.random() * Math.PI * 2;
                     const speed = 2 + Math.random() * 5;
@@ -555,17 +700,17 @@
                     this.decay = 0;
                 }
                 
-                this.char = Math.random() > 0.3 ? '𝔍♮' : 'M♮';
+                const chars = ['N♮', '𝔍♮', 'M♮', '♭'];
+                this.char = chars[Math.floor(Math.random() * chars.length)];
                 this.pulseSpeed = 0.01 + Math.random() * 0.02;
             }
             update() {
-                if (this.isPortal) {
-                    this.x += this.vx;
-                    this.y += this.vy;
-                    this.vx *= 1.03; 
-                    this.vy *= 1.03;
-                    this.rot += this.vrot;
-                    return; 
+                if (this.isChimney) {
+                    this.x += this.speedX;
+                    this.y += this.speedY;
+                    this.life -= this.decay;
+                    this.alpha = Math.max(0, this.life);
+                    return;
                 }
 
                 if (!this.isBurst) {
@@ -589,38 +734,31 @@
                 this.y += this.speedY;
                 this.x += this.speedX;
                 
-                if (!this.isBurst && !this.isPortal) {
+                if (!this.isBurst && !this.isChimney) {
                     this.alpha += Math.sin(Date.now() * this.pulseSpeed) * 0.003;
                     if (this.y < -50 || this.x < -50 || this.x > width + 50) this.reset();
                 }
             }
             draw() {
-                if (this.alpha <= 0 && !this.isPortal) return;
+                if (this.alpha <= 0) return;
                 ctx.save();
+                ctx.font = `${this.fontSize}px UnifrakturMaguntia, serif`;
                 
-                if (this.isPortal) {
-                    ctx.translate(this.x, this.y);
-                    ctx.rotate(this.rot);
-                    ctx.font = `${this.fontSize}px UnifrakturMaguntia, serif`;
-                    ctx.fillStyle = this.color + '0.9)';
-                    ctx.shadowBlur = 25;
-                    ctx.shadowColor = this.color + '1)';
-                    ctx.fillText(this.char, 0, 0);
-                    ctx.rotate(-this.rot);
-                    ctx.translate(-this.x, -this.y);
+                if (this.isChimney) {
+                    ctx.fillStyle = this.customColor || `rgba(255, 85, 0, ${this.alpha})`;
+                    ctx.shadowBlur = 15;
+                    ctx.shadowColor = this.customColor || '#ff5500';
+                } else if (this.isBurst) {
+                    ctx.fillStyle = `rgba(255, 119, 0, ${this.alpha})`;
+                    ctx.shadowBlur = 15;
+                    ctx.shadowColor = `rgba(255, 85, 0, ${this.alpha})`;
                 } else {
-                    ctx.font = `${this.fontSize}px UnifrakturMaguntia, serif`;
-                    if (this.isBurst) {
-                        ctx.fillStyle = `rgba(250, 204, 21, ${this.alpha})`;
-                        ctx.shadowBlur = 15;
-                        ctx.shadowColor = `rgba(250, 204, 21, ${this.alpha})`;
-                    } else {
-                        ctx.fillStyle = `rgba(234, 179, 8, ${Math.max(0.05, Math.min(0.6, this.alpha))})`;
-                        ctx.shadowBlur = 10;
-                        ctx.shadowColor = 'rgba(234, 179, 8, 0.4)';
-                    }
-                    ctx.fillText(this.char, this.x, this.y);
+                    ctx.fillStyle = `rgba(234, 179, 8, ${Math.max(0.05, Math.min(0.6, this.alpha))})`;
+                    ctx.shadowBlur = 10;
+                    ctx.shadowColor = 'rgba(234, 179, 8, 0.4)';
                 }
+                
+                ctx.fillText(this.char, this.x, this.y);
                 ctx.restore();
             }
         }
@@ -699,10 +837,10 @@
                 ctx.save();
                 ctx.beginPath();
                 ctx.arc(this.x, this.y, this.radius, 0, Math.PI * 2);
-                ctx.strokeStyle = `rgba(250, 204, 21, ${this.alpha})`;
+                ctx.strokeStyle = `rgba(255, 85, 0, ${this.alpha})`;
                 ctx.lineWidth = 2;
                 ctx.shadowBlur = 15;
-                ctx.shadowColor = `rgba(250, 204, 21, ${this.alpha})`;
+                ctx.shadowColor = `rgba(255, 85, 0, ${this.alpha})`;
                 ctx.stroke();
                 ctx.restore();
             }
@@ -711,11 +849,10 @@
         // Engine State
         let particles = Array.from({ length: 45 }, () => new MeninerParticle());
         let burstParticles = [];
+        let chimneyParticles = [];
         let comets = Array.from({ length: 2 }, () => new GoldComet());
         let ripples = [];
         
-        // Advanced Portal State Machine (Simplified for Performance)
-        // Phase 0: Inactive, 1: Expanding Flash, 2: Fade Out
         let portal = { active: false, phase: 0, x: 0, y: 0, radius: 0, alpha: 0 };
 
         // Global Click Event
@@ -726,7 +863,6 @@
             if(burstParticles.length > 100) burstParticles = burstParticles.slice(-100);
         });
 
-        // Trigger Standard Gold Burst
         window.spawnBurst = function(e) {
             if (portal.active) return;
             e.stopPropagation(); 
@@ -734,7 +870,7 @@
             for(let i=0; i<20; i++) burstParticles.push(new MeninerParticle(e.clientX, e.clientY, true));
         };
 
-        // SEAMLESS HIGH-SPEED TELEPORTATION PORTAL (Optimized)
+        // SEAMLESS HIGH-SPEED TELEPORTATION PORTAL
         window.triggerPortal = function(e) {
             e.preventDefault();
             e.stopPropagation();
@@ -754,7 +890,6 @@
             e.preventDefault();
             if (portal.active) return;
             
-            // Reverse fast flash teleport
             portal.active = true;
             portal.phase = 1;
             portal.x = window.innerWidth / 2;
@@ -767,7 +902,7 @@
             document.getElementById('main-app').classList.remove('hidden');
             window.scrollTo(0, 0);
             
-            portal.phase = 2; // skip straight to fade out
+            portal.phase = 2;
         }
 
         // Main Render Loop
@@ -779,36 +914,32 @@
                 let maxDim = Math.max(width, height);
 
                 if (portal.phase === 1) {
-                    // Phase 1: Rapid, elegant geometric expansion
                     portal.radius += (maxDim * 1.5 - portal.radius) * 0.15 + 30;
 
                     if (portal.radius > maxDim * 1.2) {
-                        // SWAP DOM when screen is engulfed
                         document.getElementById('main-app').classList.add('hidden');
                         document.getElementById('stats-page').classList.remove('hidden');
                         window.scrollTo(0, 0);
                         portal.phase = 2; 
                     }
                 } else if (portal.phase === 2) {
-                    // Phase 2: Smooth dissipation
                     portal.alpha -= 0.06;
                     portal.radius += 20;
 
                     if (portal.alpha <= 0) {
                         portal.active = false;
                         portal.phase = 0;
-                        canvas.style.zIndex = '0';
+                        canvas.style.zIndex = '20'; // Restore canvas z-index above cards
                     }
                 }
 
-                // Render Minimalist Quantum Flash (No laggy particles)
                 ctx.globalAlpha = Math.max(0, portal.alpha);
                 
                 let grad = ctx.createRadialGradient(portal.x, portal.y, 0, portal.x, portal.y, Math.max(1, portal.radius));
-                grad.addColorStop(0, '#ffffff'); // Pure white core
-                grad.addColorStop(0.3, '#fde047'); // Bright gold
-                grad.addColorStop(0.6, 'rgba(59, 130, 246, 0.8)'); // Subtle blue edge
-                grad.addColorStop(0.8, 'rgba(239, 68, 68, 0.4)');  // Subtle red aura
+                grad.addColorStop(0, '#ffffff');
+                grad.addColorStop(0.3, '#ff7700');
+                grad.addColorStop(0.6, 'rgba(59, 130, 246, 0.8)');
+                grad.addColorStop(0.8, 'rgba(239, 68, 68, 0.4)');
                 grad.addColorStop(1, 'rgba(9, 9, 11, 0)');
                 
                 ctx.fillStyle = grad;
@@ -819,7 +950,6 @@
                 ctx.restore();
             }
 
-            // Ambient FX (Only update if portal isn't blinding the screen)
             if (!portal.active || portal.phase === 2) {
                 particles.forEach(p => { p.update(); p.draw(); });
                 comets.forEach(c => { c.update(); c.draw(); });
@@ -829,6 +959,13 @@
                     bp.update();
                     bp.draw();
                     if (bp.life <= 0) burstParticles.splice(i, 1);
+                }
+
+                for (let i = chimneyParticles.length - 1; i >= 0; i--) {
+                    let cp = chimneyParticles[i];
+                    cp.update();
+                    cp.draw();
+                    if (cp.life <= 0) chimneyParticles.splice(i, 1);
                 }
 
                 for (let i = ripples.length - 1; i >= 0; i--) {
@@ -847,7 +984,7 @@
         function switchTab(tabId) {
             document.querySelectorAll('.tab-content').forEach(el => el.classList.remove('active'));
             document.querySelectorAll('.tab-btn').forEach(el => {
-                el.classList.remove('bg-zinc-800/80', 'text-white', 'text-gold-400', 'shadow-inner');
+                el.classList.remove('bg-zinc-800/80', 'text-white', 'text-gold-400', 'text-neonOrange-400', 'shadow-inner');
                 el.classList.add('text-zinc-400');
             });
             document.querySelectorAll('.tab-btn-mobile').forEach(el => {
@@ -863,7 +1000,11 @@
                 const mobileBtn = document.getElementById('btn-' + tabId + '-mobile');
                 if (desktopBtn) {
                     desktopBtn.classList.remove('text-zinc-400');
-                    desktopBtn.classList.add('bg-zinc-800/80', 'text-gold-400', 'shadow-inner');
+                    if (tabId === 'clicker') {
+                        desktopBtn.classList.add('bg-zinc-800/80', 'text-neonOrange-400', 'shadow-inner');
+                    } else {
+                        desktopBtn.classList.add('bg-zinc-800/80', 'text-gold-400', 'shadow-inner');
+                    }
                 }
                 if (mobileBtn) {
                     mobileBtn.classList.remove('text-zinc-400');
@@ -877,6 +1018,247 @@
                 }
             }
         }
+
+        // ==========================================
+        // MENINER CLICKER MINIGAME ENGINE & SAVING
+        // ==========================================
+        let gameState = {
+            notes: 0,
+            totalEarned: 0,
+            totalClicks: 0,
+            factories: {
+                bronze: 0,
+                silver: 0,
+                gold: 0
+            }
+        };
+
+        const factoryData = {
+            bronze: { baseCost: 15, nps: 1.0, color: 'rgba(217, 119, 6, 1)', shadow: '#d97706', border: '#b45309' },
+            silver: { baseCost: 100, nps: 8.0, color: 'rgba(228, 228, 231, 1)', shadow: '#e4e4e7', border: '#a1a1aa' },
+            gold: { baseCost: 1100, nps: 45.0, color: 'rgba(250, 204, 21, 1)', shadow: '#facc15', border: '#ca8a04' }
+        };
+
+        function getFactoryCost(type) {
+            const count = gameState.factories[type];
+            return Math.floor(factoryData[type].baseCost * Math.pow(1.15, count));
+        }
+
+        function calculateNPS() {
+            let nps = 0;
+            nps += gameState.factories.bronze * factoryData.bronze.nps;
+            nps += gameState.factories.silver * factoryData.silver.nps;
+            nps += gameState.factories.gold * factoryData.gold.nps;
+            return nps;
+        }
+
+        function updateClickerUI() {
+            document.getElementById('notes-counter').innerHTML = `${Math.floor(gameState.notes).toLocaleString()} <span class="text-xl text-neonOrange-400 font-normal">N♮</span>`;
+            document.getElementById('nps-counter').innerText = `Production Rate: ${calculateNPS().toFixed(1)} N♮ / sec`;
+            
+            document.getElementById('bronze-count').innerText = `x${gameState.factories.bronze}`;
+            document.getElementById('silver-count').innerText = `x${gameState.factories.silver}`;
+            document.getElementById('gold-count').innerText = `x${gameState.factories.gold}`;
+
+            document.getElementById('bronze-cost').innerText = getFactoryCost('bronze').toLocaleString();
+            document.getElementById('silver-cost').innerText = getFactoryCost('silver').toLocaleString();
+            document.getElementById('gold-cost').innerText = getFactoryCost('gold').toLocaleString();
+
+            document.getElementById('btn-buy-bronze').disabled = gameState.notes < getFactoryCost('bronze');
+            document.getElementById('btn-buy-silver').disabled = gameState.notes < getFactoryCost('silver');
+            document.getElementById('btn-buy-gold').disabled = gameState.notes < getFactoryCost('gold');
+
+            document.getElementById('stat-clicks').innerText = gameState.totalClicks.toLocaleString();
+            document.getElementById('stat-earned').innerText = `${Math.floor(gameState.totalEarned).toLocaleString()} N♮`;
+
+            renderSeatedFactoryRectangles();
+        }
+
+        function clickMeniner(e) {
+            e.stopPropagation();
+            const addAmount = 1;
+            gameState.notes += addAmount;
+            gameState.totalEarned += addAmount;
+            gameState.totalClicks += 1;
+
+            // Spawn floating text popup
+            const textEl = document.createElement('div');
+            textEl.className = 'click-text';
+            textEl.innerText = `+${addAmount} N♮`;
+            textEl.style.left = `${e.clientX - 20}px`;
+            textEl.style.top = `${e.clientY - 30}px`;
+            document.body.appendChild(textEl);
+            setTimeout(() => textEl.remove(), 900);
+
+            // Neon Orange Burst
+            for(let i=0; i<6; i++) {
+                burstParticles.push(new MeninerParticle(e.clientX, e.clientY, true));
+            }
+
+            updateClickerUI();
+        }
+
+        function buyFactory(type) {
+            const cost = getFactoryCost(type);
+            if (gameState.notes >= cost) {
+                gameState.notes -= cost;
+                gameState.factories[type] += 1;
+                updateClickerUI();
+                saveGame(false);
+            }
+        }
+
+        // RENDER SEATED RECTANGULAR FACTORIES ON THE SPINNING WHEEL
+        function renderSeatedFactoryRectangles() {
+            const container = document.getElementById('factory-rect-container');
+            container.innerHTML = '';
+
+            const total = gameState.factories.bronze + gameState.factories.silver + gameState.factories.gold;
+            if (total === 0) return;
+
+            // Orbit radius along perimeter of clicker
+            const radius = 125; 
+            let current = 0;
+
+            const types = [
+                { type: 'bronze', count: gameState.factories.bronze, color: factoryData.bronze.color, border: factoryData.bronze.border, shadow: factoryData.bronze.shadow },
+                { type: 'silver', count: gameState.factories.silver, color: factoryData.silver.color, border: factoryData.silver.border, shadow: factoryData.silver.shadow },
+                { type: 'gold', count: gameState.factories.gold, color: factoryData.gold.color, border: factoryData.gold.border, shadow: factoryData.gold.shadow }
+            ];
+
+            const cap = Math.min(total, 16); // max 16 seated rectangles for visual clarity
+
+            types.forEach(t => {
+                for (let i = 0; i < t.count && current < cap; i++) {
+                    const angle = (current / cap) * Math.PI * 2;
+                    const x = Math.cos(angle) * radius;
+                    const y = Math.sin(angle) * radius;
+
+                    // Seated Rectangle element
+                    const rect = document.createElement('div');
+                    rect.className = 'seated-factory-rect absolute w-9 h-5 rounded-sm bg-zinc-950 flex items-center justify-center text-[10px] font-fraktur font-bold shadow-md transform -translate-x-1/2 -translate-y-1/2 border transition-all';
+                    rect.style.left = `calc(50% + ${x}px)`;
+                    rect.style.top = `calc(50% + ${y}px)`;
+                    rect.style.borderColor = t.border;
+                    rect.style.color = t.color;
+                    rect.style.boxShadow = `0 0 10px ${t.shadow}`;
+                    rect.innerText = '𝔐';
+                    rect.setAttribute('data-color', t.color);
+                    rect.setAttribute('data-type', t.type);
+
+                    container.appendChild(rect);
+                    current++;
+                }
+            });
+        }
+
+        // Emit Colored Notes directly from Seated Rectangles
+        function emitNotesFromRectangles() {
+            const nodes = document.querySelectorAll('.seated-factory-rect');
+            nodes.forEach(node => {
+                if (Math.random() < 0.35) { // periodic chance to shoot a colored note
+                    const rect = node.getBoundingClientRect();
+                    const color = node.getAttribute('data-color');
+                    chimneyParticles.push(new MeninerParticle(
+                        rect.left + rect.width / 2, 
+                        rect.top + rect.height / 2, 
+                        false, 
+                        true, 
+                        color
+                    ));
+                }
+            });
+        }
+
+        // Passive Income Loop (100ms interval)
+        setInterval(() => {
+            const nps = calculateNPS();
+            if (nps > 0) {
+                const add = nps / 10;
+                gameState.notes += add;
+                gameState.totalEarned += add;
+                updateClickerUI();
+                emitNotesFromRectangles();
+            }
+        }, 100);
+
+        // Auto Save Loop (Every 3 seconds)
+        setInterval(() => {
+            saveGame(false);
+        }, 3000);
+
+        // Encryption / Local Save Engine
+        function encryptSave(data) {
+            const json = JSON.stringify(data);
+            return 'MNR1-' + btoa(unescape(encodeURIComponent(json)));
+        }
+
+        function decryptSave(str) {
+            if (!str.startsWith('MNR1-')) throw new Error("Invalid Save Format");
+            const raw = str.replace('MNR1-', '');
+            const decoded = decodeURIComponent(escape(atob(raw)));
+            return JSON.parse(decoded);
+        }
+
+        function saveGame(showNotice = false) {
+            localStorage.setItem('inmmo_clicker_save', JSON.stringify(gameState));
+            if (showNotice) {
+                alert("Game state saved to local browser storage!");
+            }
+        }
+
+        function loadGame() {
+            const raw = localStorage.getItem('inmmo_clicker_save');
+            if (raw) {
+                try {
+                    const parsed = JSON.parse(raw);
+                    gameState = { ...gameState, ...parsed };
+                    updateClickerUI();
+                } catch(e) {
+                    console.error("Failed to load save:", e);
+                }
+            }
+        }
+
+        function exportSave() {
+            saveGame(false);
+            const encryptedStr = encryptSave(gameState);
+            
+            const blob = new Blob([encryptedStr], { type: 'text/plain' });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = `meniner_clicker_save_${Date.now()}.txt`;
+            a.click();
+            URL.revokeObjectURL(url);
+        }
+
+        function openImportModal() {
+            document.getElementById('import-modal').classList.remove('hidden');
+        }
+
+        function closeImportModal() {
+            document.getElementById('import-modal').classList.add('hidden');
+        }
+
+        function processImport() {
+            const code = document.getElementById('import-input').value.trim();
+            if (!code) return;
+
+            try {
+                const loaded = decryptSave(code);
+                gameState = { ...gameState, ...loaded };
+                updateClickerUI();
+                saveGame(false);
+                closeImportModal();
+                alert("Save state successfully imported!");
+            } catch(e) {
+                alert("Error importing save state. Please check your code string.");
+            }
+        }
+
+        // Initialize clicker state on load
+        loadGame();
     </script>
 </body>
 </html>
