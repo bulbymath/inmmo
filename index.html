@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>INMMO | International Noted Meniner Mathematical Olympiad</title>
     <!-- Site Tab Logo / Favicon -->
-    <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Crect width='100' height='100' rx='22' fill='%2309090b' stroke='%23ff5500' stroke-width='5'/%3E%3Ctext x='40' y='68' font-family='serif' font-weight='bold' font-size='52' fill='%23ff6600' text-anchor='middle'%3E𝔐%3C/text%3E%3Ctext x='72' y='42' font-family='sans-serif' font-size='30' font-weight='bold' fill='%23ff9900'%3E♮%3C/text%3E%3C/svg%3E">
+    <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Crect width='100' height='100' rx='22' fill='%2309090b' stroke='%23eab308' stroke-width='5'/%3E%3Ctext x='40' y='68' font-family='serif' font-weight='bold' font-size='52' fill='%23facc15' text-anchor='middle'%3E𝔐%3C/text%3E%3Ctext x='72' y='42' font-family='sans-serif' font-size='30' font-weight='bold' fill='%23fde047'%3E♮%3C/text%3E%3C/svg%3E">
     <!-- Tailwind CSS -->
     <script src="https://cdn.tailwindcss.com"></script>
     <!-- Google Fonts -->
@@ -135,8 +135,8 @@
             pointer-events: none;
             font-family: 'JetBrains Mono', monospace;
             font-weight: bold;
-            color: #ff7700;
-            text-shadow: 0 0 12px rgba(255, 85, 0, 0.9);
+            color: #facc15;
+            text-shadow: 0 0 12px rgba(250, 204, 21, 0.9);
             animation: floatUp 0.9s ease-out forwards;
             z-index: 50;
         }
@@ -148,8 +148,9 @@
 </head>
 <body class="bg-zinc-950 text-zinc-100 font-sans antialiased min-h-screen flex flex-col selection:bg-gold-500/30 selection:text-gold-300 relative">
 
-    <!-- Interactive Comet & Particle Canvas Background (Rendered above cards) -->
-    <canvas id="vfx-canvas"></canvas>
+    <!-- Interactive Canvas Layers -->
+    <canvas id="vfx-canvas-bg" class="fixed top-0 left-0 w-screen h-screen pointer-events-none z-0"></canvas>
+    <canvas id="vfx-canvas-fg" class="fixed top-0 left-0 w-screen h-screen pointer-events-none z-[100]"></canvas>
 
     <!-- MAIN APP CONTAINER -->
     <div id="main-app" class="relative z-10">
@@ -179,7 +180,7 @@
                         <button onclick="switchTab('home')" id="btn-home" class="tab-btn px-4 py-2 rounded-lg font-medium text-xs font-mono uppercase tracking-wider text-zinc-400 hover:text-white transition-all hover:bg-zinc-800/50">Overview</button>
                         <button onclick="switchTab('papers')" id="btn-papers" class="tab-btn px-4 py-2 rounded-lg font-medium text-xs font-mono uppercase tracking-wider text-zinc-400 hover:text-white transition-all hover:bg-zinc-800/50">Papers & Solutions</button>
                         <button onclick="switchTab('theory')" id="btn-theory" class="tab-btn px-4 py-2 rounded-lg font-medium text-xs font-mono uppercase tracking-wider text-zinc-400 hover:text-white transition-all hover:bg-zinc-800/50">Meniner Theory</button>
-                        <button onclick="switchTab('clicker')" id="btn-clicker" class="tab-btn px-4 py-2 rounded-lg font-medium text-xs font-mono uppercase tracking-wider text-neonOrange-400 hover:text-white transition-all hover:bg-zinc-800/50 flex items-center space-x-1.5">
+                        <button onclick="switchTab('clicker')" id="btn-clicker" class="tab-btn px-4 py-2 rounded-lg font-medium text-xs font-mono uppercase tracking-wider text-gold-400 hover:text-white transition-all hover:bg-zinc-800/50 flex items-center space-x-1.5">
                             <span>⚡ Clicker</span>
                         </button>
                         <button onclick="switchTab('winners')" id="btn-winners" class="tab-btn px-4 py-2 rounded-lg font-medium text-xs font-mono uppercase tracking-wider text-zinc-400 hover:text-white transition-all hover:bg-zinc-800/50 flex items-center space-x-1.5">
@@ -195,7 +196,7 @@
                 <button onclick="switchTab('home')" id="btn-home-mobile" class="tab-btn-mobile text-xs font-mono uppercase tracking-wider px-3 py-1.5 rounded-lg text-zinc-400 bg-zinc-900">Overview</button>
                 <button onclick="switchTab('papers')" id="btn-papers-mobile" class="tab-btn-mobile text-xs font-mono uppercase tracking-wider px-3 py-1.5 rounded-lg text-zinc-400">Papers</button>
                 <button onclick="switchTab('theory')" id="btn-theory-mobile" class="tab-btn-mobile text-xs font-mono uppercase tracking-wider px-3 py-1.5 rounded-lg text-zinc-400">Theory</button>
-                <button onclick="switchTab('clicker')" id="btn-clicker-mobile" class="tab-btn-mobile text-xs font-mono uppercase tracking-wider px-3 py-1.5 rounded-lg text-neonOrange-400">Clicker</button>
+                <button onclick="switchTab('clicker')" id="btn-clicker-mobile" class="tab-btn-mobile text-xs font-mono uppercase tracking-wider px-3 py-1.5 rounded-lg text-gold-400">Clicker</button>
                 <button onclick="switchTab('winners')" id="btn-winners-mobile" class="tab-btn-mobile text-xs font-mono uppercase tracking-wider px-3 py-1.5 rounded-lg text-zinc-400">Leaderboard</button>
             </div>
         </header>
@@ -212,9 +213,9 @@
                             <span class="font-fraktur text-6xl text-gold-400 select-none">&#x1D510;<span class="font-sans text-xl text-amber-200 ml-1 relative -top-4">♮</span></span>
                         </div>
                     </div>
-                    <div class="inline-flex items-center space-x-2 px-3 py-1 rounded-full bg-gold-500/10 border border-gold-500/30 mb-6 shadow-gold-glow">
-                        <span class="w-2 h-2 rounded-full bg-gold-400 animate-pulse"></span>
-                        <span class="text-xs font-mono text-gold-300 uppercase tracking-widest">1st INMMO Competition In Progress</span>
+                    <div class="inline-flex items-center space-x-2 px-3 py-1 rounded-full bg-zinc-800/80 border border-zinc-700 mb-6 shadow-sm">
+                        <span class="w-2 h-2 rounded-full bg-zinc-400"></span>
+                        <span class="text-xs font-mono text-zinc-400 uppercase tracking-widest">1st INMMO Competition Concluded</span>
                     </div>
                     <h2 class="text-4xl sm:text-6xl font-serif font-black tracking-tight text-white mb-6">
                         The International Noted Meniner<br/>
@@ -226,7 +227,7 @@
                     </p>
                     <div class="flex flex-wrap justify-center gap-4">
                         <button onclick="switchTab('theory')" class="px-7 py-3.5 bg-gradient-to-r from-gold-500 to-amber-600 hover:from-gold-400 hover:to-amber-500 text-zinc-950 font-bold text-sm tracking-wider uppercase rounded-xl transition-all shadow-gold-glow hover:shadow-gold-glow-lg transform hover:-translate-y-0.5">Explore Meniner Theory</button>
-                        <button onclick="switchTab('winners')" class="px-7 py-3.5 bg-zinc-900 hover:bg-zinc-800 text-zinc-200 border border-zinc-700/80 hover:border-gold-500/50 font-medium text-sm tracking-wider uppercase rounded-xl transition-all shadow-lg hover:shadow-gold-glow">View Live Standings</button>
+                        <button onclick="switchTab('winners')" class="px-7 py-3.5 bg-zinc-900 hover:bg-zinc-800 text-zinc-200 border border-zinc-700/80 hover:border-gold-500/50 font-medium text-sm tracking-wider uppercase rounded-xl transition-all shadow-lg hover:shadow-gold-glow">View Official Results</button>
                     </div>
                     <!-- Feature Grid -->
                     <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mt-20 text-left">
@@ -242,8 +243,8 @@
                         </div>
                         <div class="p-6 rounded-2xl glass-panel border border-zinc-800/80 hover:border-gold-500/40 hover:shadow-gold-glow transition-all duration-300 transform hover:-translate-y-1">
                             <div class="text-xs font-mono text-gold-400 uppercase tracking-wider mb-2">03 / Honor</div>
-                            <h3 class="text-lg font-bold text-white mb-2">Active Contest Window</h3>
-                            <p class="text-sm text-zinc-400">Competitors worldwide have 3 days to submit complete, handwritten or typed proofs.</p>
+                            <h3 class="text-lg font-bold text-white mb-2">Contest Concluded</h3>
+                            <p class="text-sm text-zinc-400">The 2026 INMMO window has officially closed. Check the leaderboard for the final certified standings.</p>
                         </div>
                     </div>
                 </div>
@@ -254,7 +255,7 @@
                 <div class="mb-8 border-b border-zinc-800/80 pb-6">
                     <div class="flex items-center space-x-3 mb-2">
                         <h2 class="text-3xl font-serif font-bold text-white">Examination Papers & Solutions</h2>
-                        <span class="px-2.5 py-0.5 text-xs font-mono font-bold bg-amber-500/10 text-gold-400 border border-gold-500/30 rounded-full shadow-gold-glow">IN PROGRESS</span>
+                        <span class="px-2.5 py-0.5 text-xs font-mono font-bold bg-green-500/10 text-green-400 border border-green-500/30 rounded-full">UNSEALED</span>
                     </div>
                     <p class="text-zinc-400 text-sm">Official problem sets, solution keys, and committee grading rubrics.</p>
                 </div>
@@ -263,7 +264,7 @@
                         <div>
                             <div class="flex justify-between items-start mb-4">
                                 <span class="px-2.5 py-1 text-[11px] font-mono uppercase bg-zinc-800/80 text-zinc-300 rounded-md border border-zinc-700">Official Contest</span>
-                                <span class="text-xs font-mono text-gold-400 group-hover:animate-pulse">6 Problems • 48 Max Score</span>
+                                <span class="text-xs font-mono text-gold-400">6 Problems • 48 Max Score</span>
                             </div>
                             <h3 class="text-xl font-bold text-white mb-2">1st INMMO 2026 Paper</h3>
                             <p class="text-sm text-zinc-400 mb-6">Contains the complete problem set and instruction manual with all formula definitions.</p>
@@ -276,28 +277,23 @@
                             </a>
                         </div>
                     </div>
-                    <div class="p-6 rounded-2xl bg-zinc-900/40 border border-zinc-800/50 flex flex-col justify-between relative overflow-hidden opacity-80 cursor-not-allowed">
-                        <div class="absolute -right-6 -bottom-6 w-32 h-32 bg-amber-500/5 rounded-full blur-2xl"></div>
+                    <div class="p-6 rounded-2xl glass-panel border border-zinc-800 hover:border-green-500/50 hover:shadow-blue-glow transition-all duration-300 flex flex-col justify-between group">
                         <div>
                             <div class="flex justify-between items-start mb-4">
-                                <span class="px-2.5 py-1 text-[11px] font-mono uppercase bg-amber-500/10 text-gold-400 border border-gold-500/20 rounded-md">Locked</span>
-                                <span class="text-xs font-mono text-zinc-500">Grading Committee Only</span>
+                                <span class="px-2.5 py-1 text-[11px] font-mono uppercase bg-green-500/10 text-green-400 border border-green-500/30 rounded-md">Official Rubric</span>
+                                <span class="text-xs font-mono text-green-400">Solutions Unlocked</span>
                             </div>
-                            <h3 class="text-xl font-bold text-zinc-300 mb-2">Official Solutions & Rubric</h3>
-                            <p class="text-sm text-zinc-500 mb-6">Full solutions and Meniner Theory bonus point breakdowns will be made public once the 3-day contest window officially concludes.</p>
+                            <h3 class="text-xl font-bold text-white mb-2">1st INMMO Solutions</h3>
+                            <p class="text-sm text-zinc-400 mb-6">Full solutions and Meniner Theory bonus point breakdowns. Published post-contest.</p>
                         </div>
-                        <div class="flex items-center justify-between pt-4 border-t border-zinc-800/40 text-xs font-mono text-zinc-500">
-                            <span>Status: Sealed</span>
-                            <span class="text-amber-500/80">Releases Post-Contest</span>
+                        <div class="flex items-center justify-between pt-4 border-t border-zinc-800/60">
+                            <span class="text-xs font-mono text-zinc-500">LaTeX Compiled</span>
+                            <a href="#" class="text-xs font-mono text-green-400 hover:text-green-300 flex items-center space-x-1 group-hover:scale-105 transition-transform">
+                                <span>Open Solutions (PDF)</span>
+                                <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"></path></svg>
+                            </a>
                         </div>
                     </div>
-                </div>
-                <div class="p-6 rounded-2xl bg-gradient-to-r from-zinc-900 via-zinc-900/90 to-zinc-900 border border-gold-500/30 text-center shadow-gold-glow-inner">
-                    <div class="w-10 h-10 rounded-full bg-gold-500/10 border border-gold-500/40 flex items-center justify-center mx-auto mb-3 shadow-gold-glow">
-                        <span class="text-gold-400">⏳</span>
-                    </div>
-                    <h4 class="text-base font-bold text-white mb-1">Contest In Progress</h4>
-                    <p class="text-xs text-zinc-400 max-w-lg mx-auto">Submissions are currently being evaluated in real-time by the INMMO Committee.</p>
                 </div>
             </div>
 
@@ -329,7 +325,7 @@
                         </div>
                     </div>
                 </div>
-                <div class="w-full glass-panel rounded-2xl overflow-hidden shadow-2xl border border-zinc-800/80" style="height: 72vh; min-height: 500px;">
+                <div class="w-full bg-zinc-900 rounded-2xl overflow-hidden shadow-2xl border border-zinc-800/80 relative z-10" style="height: 72vh; min-height: 500px;">
                     <iframe src="https://drive.google.com/file/d/1ZEF2daOe7spVdbpcGcNJtlx1n9dHtZ9M/preview" class="w-full h-full border-0" allow="autoplay"></iframe>
                 </div>
             </div>
@@ -340,9 +336,9 @@
                     <div>
                         <h2 class="text-3xl font-serif font-bold text-white flex items-center">
                             <span>Meniner Harmonic Clicker</span>
-                            <span class="ml-3 px-2 py-0.5 text-xs font-mono bg-orange-500/20 text-neonOrange-400 border border-orange-500/40 rounded uppercase">v1.1</span>
+                            <span class="ml-3 px-2 py-0.5 text-xs font-mono bg-gold-500/20 text-gold-400 border border-gold-500/40 rounded uppercase">v1.1</span>
                         </h2>
-                        <p class="text-zinc-400 text-sm mt-1">Synthesize notes ($\text{N}_{\natural}$) via the spinning Neon Orange Noted Clicker.</p>
+                        <p class="text-zinc-400 text-sm mt-1">Synthesize notes ($\text{N}_{\natural}$) via the spinning Gold Noted Clicker.</p>
                     </div>
 
                     <!-- Save / Export Controls -->
@@ -350,7 +346,7 @@
                         <button onclick="saveGame(true)" class="px-3 py-1.5 bg-zinc-900 hover:bg-zinc-800 text-zinc-300 border border-zinc-700 rounded-lg text-xs font-mono uppercase tracking-wider transition-colors">
                             💾 Save Game
                         </button>
-                        <button onclick="exportSave()" class="px-3 py-1.5 bg-zinc-900 hover:bg-zinc-800 text-neonOrange-400 border border-orange-500/30 rounded-lg text-xs font-mono uppercase tracking-wider transition-colors">
+                        <button onclick="exportSave()" class="px-3 py-1.5 bg-zinc-900 hover:bg-zinc-800 text-gold-400 border border-gold-500/30 rounded-lg text-xs font-mono uppercase tracking-wider transition-colors">
                             📤 Export TXT
                         </button>
                         <button onclick="openImportModal()" class="px-3 py-1.5 bg-zinc-900 hover:bg-zinc-800 text-indigo-400 border border-indigo-500/30 rounded-lg text-xs font-mono uppercase tracking-wider transition-colors">
@@ -365,37 +361,37 @@
                     <div class="lg:col-span-7 glass-panel p-8 rounded-3xl border border-zinc-800 text-center relative overflow-hidden flex flex-col items-center justify-center min-h-[500px]">
                         <!-- Counter HUD -->
                         <div class="mb-6 z-10">
-                            <div class="text-xs font-mono text-neonOrange-400 uppercase tracking-widest mb-1">Synthesized Harmonic Notes</div>
-                            <div id="notes-counter" class="text-5xl font-mono font-black text-white tracking-tight">0 <span class="text-xl text-neonOrange-400 font-normal">N♮</span></div>
+                            <div class="text-xs font-mono text-gold-400 uppercase tracking-widest mb-1">Synthesized Harmonic Notes</div>
+                            <div id="notes-counter" class="text-5xl font-mono font-black text-white tracking-tight">0 <span class="text-xl text-gold-400 font-normal">N♮</span></div>
                             <div id="nps-counter" class="text-xs font-mono text-zinc-400 mt-1">Production Rate: 0.0 N♮ / sec</div>
                         </div>
 
-                        <!-- Central SPINNING Wheel with Neon Orange Clicker and Rectangular Seated Factories -->
+                        <!-- Central SPINNING Wheel with Gold Clicker and Rectangular Seated Factories -->
                         <div id="clicker-arena" class="relative my-8 w-72 h-72 flex items-center justify-center select-none">
                             
                             <!-- Spinning Wheel Outer Container -->
-                            <div id="spinning-wheel" class="absolute inset-0 rounded-full border border-dashed border-orange-500/30 animate-slow-spin flex items-center justify-center pointer-events-none">
+                            <div id="spinning-wheel" class="absolute inset-0 rounded-full border border-dashed border-gold-500/30 animate-slow-spin flex items-center justify-center pointer-events-none">
                                 <!-- Seated Rectangular Factories will render here via JS -->
                                 <div id="factory-rect-container" class="absolute inset-0 pointer-events-none"></div>
                             </div>
 
-                            <!-- Central Neon Orange Clickable Button -->
-                            <button id="big-meniner-btn" onclick="clickMeniner(event)" class="relative z-20 w-44 h-44 rounded-full bg-gradient-to-br from-zinc-950 via-zinc-900 to-black border-2 border-orange-500/80 shadow-orange-glow-lg active:scale-95 transition-transform duration-100 flex items-center justify-center group focus:outline-none cursor-pointer">
-                                <div class="absolute inset-2 rounded-full border border-orange-500/30 group-hover:border-orange-400/80 transition-colors"></div>
-                                <span class="font-fraktur text-7xl text-neonOrange-500 group-hover:scale-110 transition-transform select-none drop-shadow-[0_0_20px_rgba(255,85,0,0.95)]">
-                                    &#x1D510;<span class="font-sans text-2xl text-orange-300 ml-0.5 relative -top-6">♮</span>
+                            <!-- Central Gold Clickable Button -->
+                            <button id="big-meniner-btn" onclick="clickMeniner(event)" class="relative z-20 w-44 h-44 rounded-full bg-gradient-to-br from-zinc-950 via-zinc-900 to-black border-2 border-gold-500/80 shadow-gold-glow-lg active:scale-95 transition-transform duration-100 flex items-center justify-center group focus:outline-none cursor-pointer">
+                                <div class="absolute inset-2 rounded-full border border-gold-500/30 group-hover:border-gold-400/80 transition-colors"></div>
+                                <span class="font-fraktur text-7xl text-gold-400 group-hover:scale-110 transition-transform select-none drop-shadow-[0_0_20px_rgba(250,204,21,0.95)]">
+                                    &#x1D510;<span class="font-sans text-2xl text-amber-200 ml-0.5 relative -top-6">♮</span>
                                 </span>
                             </button>
                         </div>
 
-                        <p class="text-xs font-mono text-zinc-500 z-10">Click the spinning Neon Orange Noted Meniner to synthesize notes.</p>
+                        <p class="text-xs font-mono text-zinc-500 z-10">Click the spinning Gold Noted Meniner to synthesize notes.</p>
                     </div>
 
                     <!-- Right: Factory Upgrades Shop -->
                     <div class="lg:col-span-5 space-y-4">
                         <div class="glass-panel p-5 rounded-2xl border border-zinc-800">
                             <h3 class="text-sm font-mono font-bold text-white uppercase tracking-wider mb-4 flex items-center">
-                                <span class="text-neonOrange-400 mr-2">🏭</span> Meniner Industrial Upgrades
+                                <span class="text-gold-400 mr-2">🏭</span> Meniner Industrial Upgrades
                             </h3>
 
                             <div class="space-y-3">
@@ -451,7 +447,7 @@
                             </div>
                             <div class="flex justify-between">
                                 <span>Total Earned:</span>
-                                <span id="stat-earned" class="text-neonOrange-400 font-bold">0 N♮</span>
+                                <span id="stat-earned" class="text-gold-400 font-bold">0 N♮</span>
                             </div>
                         </div>
                     </div>
@@ -466,9 +462,9 @@
                         <h2 class="text-3xl font-serif font-bold text-white">Live Leaderboard & Hall of Winners</h2>
                         <p class="text-zinc-400 text-sm mt-1">Official verified scores for the 1st INMMO (2026).</p>
                     </div>
-                    <div class="inline-flex items-center space-x-2 px-3 py-1.5 rounded-full bg-amber-500/10 border border-gold-500/30 text-gold-300 font-mono text-xs uppercase tracking-wider animate-gold-pulse">
-                        <span class="w-2 h-2 rounded-full bg-gold-400 animate-ping"></span>
-                        <span>Contest Active • Live Evaluation</span>
+                    <div class="inline-flex items-center space-x-2 px-3 py-1.5 rounded-full bg-green-500/10 border border-green-500/30 text-green-400 font-mono text-xs uppercase tracking-wider">
+                        <span class="w-2 h-2 rounded-full bg-green-500"></span>
+                        <span>Contest Concluded • Results Official</span>
                     </div>
                 </div>
 
@@ -482,20 +478,114 @@
                         <span class="text-xs font-mono text-zinc-500">Max Score: 48</span>
                     </div>
 
-                    <!-- SEALED LEADERBOARD STATE -->
-                    <div class="p-12 sm:p-16 flex flex-col items-center justify-center text-center">
-                        <div class="w-20 h-20 bg-zinc-900 border border-zinc-700 rounded-full flex items-center justify-center mb-6 shadow-inner">
-                            <svg class="w-10 h-10 text-zinc-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"></path></svg>
-                        </div>
-                        <h3 class="text-2xl font-bold text-white mb-2 tracking-tight">Leaderboard Sealed</h3>
-                        <p class="text-zinc-400 max-w-lg mb-6">
-                            The 1st INMMO is currently in progress. Competitor identities, scorecards, and standings are strictly classified until the official examination and grading window concludes.
-                        </p>
-                        <div class="inline-flex items-center px-4 py-2 rounded-lg bg-gold-500/10 border border-gold-500/20 text-gold-400 text-xs font-mono uppercase tracking-wider">
-                            <span class="w-1.5 h-1.5 rounded-full bg-gold-500 animate-pulse mr-2"></span>
-                            Awaiting Submissions
+                    <!-- Competitor 1: banning gran -->
+                    <div class="p-6 sm:p-8 border-b border-zinc-800/60 bg-gradient-to-r from-amber-500/10 via-transparent to-transparent hover:bg-zinc-900/50 transition-colors">
+                        <div class="flex flex-col md:flex-row items-center md:items-start justify-between gap-6">
+                            <div class="flex items-center md:items-start space-x-5 text-center md:text-left">
+                                <div class="relative flex-shrink-0 cursor-crosshair transform hover:scale-105 transition-transform duration-300" onclick="spawnBurst(event)">
+                                    <div class="w-20 h-20 bg-gradient-to-br from-gold-400 to-amber-600 rounded-2xl flex items-center justify-center text-3xl font-bold text-zinc-950 shadow-gold-glow">🥇</div>
+                                    <span class="absolute -bottom-2 -right-2 px-2 py-0.5 bg-zinc-950 border border-gold-400 text-gold-400 font-mono font-bold text-[10px] rounded-md">#1</span>
+                                </div>
+                                <div>
+                                    <div class="flex flex-wrap items-center justify-center md:justify-start gap-2 mb-1">
+                                        <h4 class="text-2xl font-bold text-white">the big wait what</h4>
+                                        <span class="px-2 py-0.5 text-[10px] font-mono font-bold bg-amber-400/20 text-gold-300 border border-gold-400/50 shadow-gold-glow rounded uppercase">Gold Leader (TIE)</span>
+                                    </div>
+                                    <div class="flex flex-wrap items-center justify-center md:justify-start gap-2 mb-3">
+                                        <p class="text-xs font-mono text-zinc-400">AKA banning gran • G8 (Rising G9) • Michigan, USA</p>
+                                        <span class="inline-flex items-center px-1.5 py-0.5 rounded bg-indigo-500/10 text-indigo-400 border border-indigo-500/30 text-[10px] font-bold uppercase tracking-wider shadow-sm">
+                                            <svg class="w-3 h-3 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z"></path></svg>AwesomeMath
+                                        </span>
+                                    </div>
+                                    <p class="text-xs text-zinc-300 max-w-xl leading-relaxed mb-4">
+                                        Solves all 6 problems on the inaugural examination, mastering both Q5 (Chalkboard Erasing Invariant) and Q6 (Tosgoalot's Crumlationny AM-GM).
+                                    </p>
+                                    <button onclick="triggerPortal(event, 'banning')" class="group relative inline-flex items-center space-x-2 px-5 py-2.5 bg-zinc-900 text-white text-xs font-mono uppercase tracking-wider rounded-xl transition-all border border-zinc-700 hover:border-blue-500/50 hover:shadow-blue-glow overflow-hidden">
+                                        <div class="absolute inset-0 bg-gradient-to-r from-blue-600/20 to-red-600/20 opacity-0 group-hover:opacity-100 transition-opacity"></div>
+                                        <svg class="w-4 h-4 text-gold-400 group-hover:text-white transition-colors relative z-10" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"></path></svg>
+                                        <span class="relative z-10">View Verified Scorecard</span>
+                                    </button>
+                                </div>
+                            </div>
+                            <div class="text-center md:text-right flex-shrink-0">
+                                <div class="text-5xl font-black font-mono text-gold-400 tracking-tight">45<span class="text-lg text-zinc-500 font-normal">/48</span></div>
+                                <div class="text-[10px] font-mono text-gold-300 uppercase tracking-widest mt-1">Gold Medal Standing</div>
+                            </div>
                         </div>
                     </div>
+
+                    <!-- Competitor 2: Benjamin60 -->
+                    <div class="p-6 sm:p-8 border-b border-zinc-800/60 bg-gradient-to-r from-amber-500/10 via-transparent to-transparent hover:bg-zinc-900/50 transition-colors">
+                        <div class="flex flex-col md:flex-row items-center md:items-start justify-between gap-6">
+                            <div class="flex items-center md:items-start space-x-5 text-center md:text-left">
+                                <div class="relative flex-shrink-0 cursor-crosshair transform hover:scale-105 transition-transform duration-300" onclick="spawnBurst(event)">
+                                    <div class="w-20 h-20 bg-gradient-to-br from-gold-400 to-amber-600 rounded-2xl flex items-center justify-center text-3xl font-bold text-zinc-950 shadow-gold-glow">🥇</div>
+                                    <span class="absolute -bottom-2 -right-2 px-2 py-0.5 bg-zinc-950 border border-gold-400 text-gold-400 font-mono font-bold text-[10px] rounded-md">#1</span>
+                                </div>
+                                <div>
+                                    <div class="flex flex-wrap items-center justify-center md:justify-start gap-2 mb-1">
+                                        <h4 class="text-2xl font-bold text-white">Benjamin60</h4>
+                                        <span class="px-2 py-0.5 text-[10px] font-mono font-bold bg-amber-400/20 text-gold-300 border border-gold-400/50 shadow-gold-glow rounded uppercase">Gold Leader (TIE)</span>
+                                    </div>
+                                    <div class="flex flex-wrap items-center justify-center md:justify-start gap-2 mb-3">
+                                        <p class="text-xs font-mono text-zinc-400">G11 • Ireland</p>
+                                        <span class="inline-flex items-center px-1.5 py-0.5 rounded bg-green-500/10 text-green-400 border border-green-500/30 text-[10px] font-bold uppercase tracking-wider shadow-sm">
+                                            <svg class="w-3 h-3 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 18h.01M8 21h8a2 2 0 002-2V5a2 2 0 00-2-2H8a2 2 0 00-2 2v14a2 2 0 002 2z"></path></svg>Math Olympiads
+                                        </span>
+                                    </div>
+                                    <p class="text-xs text-zinc-300 max-w-xl leading-relaxed mb-4">
+                                        Flawlessly applied the Jagmag Theorem and Bret3 Lemma. Utilized the Rearrangement Inequality on Q6 for a brilliant alternative proof.
+                                    </p>
+                                    <button onclick="triggerPortal(event, 'benjamin')" class="group relative inline-flex items-center space-x-2 px-5 py-2.5 bg-zinc-900 text-white text-xs font-mono uppercase tracking-wider rounded-xl transition-all border border-zinc-700 hover:border-blue-500/50 hover:shadow-blue-glow overflow-hidden">
+                                        <div class="absolute inset-0 bg-gradient-to-r from-blue-600/20 to-red-600/20 opacity-0 group-hover:opacity-100 transition-opacity"></div>
+                                        <svg class="w-4 h-4 text-gold-400 group-hover:text-white transition-colors relative z-10" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"></path></svg>
+                                        <span class="relative z-10">View Verified Scorecard</span>
+                                    </button>
+                                </div>
+                            </div>
+                            <div class="text-center md:text-right flex-shrink-0">
+                                <div class="text-5xl font-black font-mono text-gold-400 tracking-tight">45<span class="text-lg text-zinc-500 font-normal">/48</span></div>
+                                <div class="text-[10px] font-mono text-gold-300 uppercase tracking-widest mt-1">Gold Medal Standing</div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Competitor 3: USAMO Qual -->
+                    <div class="p-6 sm:p-8 border-b border-zinc-800/60 hover:bg-zinc-900/50 transition-colors">
+                        <div class="flex flex-col md:flex-row items-center md:items-start justify-between gap-6">
+                            <div class="flex items-center md:items-start space-x-5 text-center md:text-left">
+                                <div class="relative flex-shrink-0 cursor-crosshair transform hover:scale-105 transition-transform duration-300" onclick="spawnBurst(event)">
+                                    <div class="w-20 h-20 bg-gradient-to-br from-amber-700 to-amber-900 rounded-2xl flex items-center justify-center text-3xl font-bold text-zinc-950 shadow-inner border border-amber-800">🥉</div>
+                                    <span class="absolute -bottom-2 -right-2 px-2 py-0.5 bg-zinc-950 border border-amber-700 text-amber-500 font-mono font-bold text-[10px] rounded-md">#3</span>
+                                </div>
+                                <div>
+                                    <div class="flex flex-wrap items-center justify-center md:justify-start gap-2 mb-1">
+                                        <h4 class="text-2xl font-bold text-white">Melted Pie :D</h4>
+                                        <span class="px-2 py-0.5 text-[10px] font-mono font-bold bg-amber-900/20 text-amber-600 border border-amber-800/50 rounded uppercase">Bronze Leader</span>
+                                    </div>
+                                    <div class="flex flex-wrap items-center justify-center md:justify-start gap-2 mb-3">
+                                        <p class="text-xs font-mono text-zinc-400">"Too lazy for Q1-Q3" • G6 • MA, USA</p>
+                                        <span class="inline-flex items-center px-1.5 py-0.5 rounded bg-indigo-500/10 text-indigo-400 border border-indigo-500/30 text-[10px] font-bold uppercase tracking-wider shadow-sm">
+                                            <svg class="w-3 h-3 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z"></path></svg>AwesomeMath
+                                        </span>
+                                    </div>
+                                    <p class="text-xs text-zinc-400 max-w-xl leading-relaxed mb-4">
+                                        Solved Q4 flawlessly in his head without touching paper, but suffered deductions on Q5 and Q6 for execution sillies.
+                                    </p>
+                                    <button onclick="triggerPortal(event, 'usamo')" class="group relative inline-flex items-center space-x-2 px-5 py-2.5 bg-zinc-900 text-white text-xs font-mono uppercase tracking-wider rounded-xl transition-all border border-zinc-700 hover:border-amber-700/50 hover:shadow-lg overflow-hidden">
+                                        <div class="absolute inset-0 bg-gradient-to-r from-amber-700/10 to-amber-900/10 opacity-0 group-hover:opacity-100 transition-opacity"></div>
+                                        <svg class="w-4 h-4 text-amber-600 group-hover:text-amber-400 transition-colors relative z-10" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"></path></svg>
+                                        <span class="relative z-10">View Verified Scorecard</span>
+                                    </button>
+                                </div>
+                            </div>
+                            <div class="text-center md:text-right flex-shrink-0">
+                                <div class="text-5xl font-black font-mono text-amber-600 tracking-tight">16<span class="text-lg text-zinc-600 font-normal">/48</span></div>
+                                <div class="text-[10px] font-mono text-amber-700 uppercase tracking-widest mt-1">Bronze Medal Standing</div>
+                            </div>
+                        </div>
+                    </div>
+
                 </div>
             </div>
         </main>
@@ -515,7 +605,7 @@
         </footer>
     </div>
 
-    <!-- FULL-SCREEN STATS DASHBOARD -->
+    <!-- FULL-SCREEN DYNAMIC STATS DASHBOARD -->
     <div id="stats-page" class="hidden min-h-screen w-full bg-zinc-950 relative z-10 overflow-y-auto">
         <div class="w-full bg-zinc-900 border-b border-zinc-800 sticky top-0 z-30 shadow-2xl">
             <div class="max-w-5xl mx-auto px-4 py-4 flex justify-between items-center">
@@ -536,51 +626,37 @@
             <div class="glass-panel border border-zinc-800 rounded-3xl p-8 md:p-12 shadow-2xl relative overflow-hidden fade-in" style="animation-delay: 0.2s;">
                 <div class="absolute -right-20 -top-20 w-64 h-64 bg-gold-500/5 rounded-full blur-3xl"></div>
                 <div class="flex flex-col md:flex-row items-center md:items-start gap-8 mb-12 border-b border-zinc-800/60 pb-12">
-                    <div class="w-32 h-32 bg-zinc-900 border border-zinc-700 rounded-2xl flex items-center justify-center text-4xl shadow-inner flex-shrink-0">🔒</div>
+                    <div id="sp-avatar" class="w-32 h-32 bg-gradient-to-br from-gold-400 to-amber-600 rounded-2xl flex items-center justify-center text-6xl shadow-gold-glow flex-shrink-0 cursor-crosshair transform hover:scale-105 transition-transform" onclick="spawnBurst(event)">🥇</div>
                     <div class="text-center md:text-left flex-grow">
-                        <h3 class="text-4xl font-bold text-white tracking-tight mb-2">[CLASSIFIED RECORD]</h3>
-                        <p class="text-lg font-mono text-zinc-500 mb-4">Competitor Data Hidden</p>
+                        <h3 id="sp-name" class="text-4xl font-bold text-white tracking-tight mb-2">...</h3>
+                        <p id="sp-aka" class="text-lg font-mono text-gold-400 mb-4">...</p>
                         <div class="flex flex-wrap justify-center md:justify-start gap-3">
-                            <span class="px-3 py-1 bg-zinc-900 border border-zinc-700 text-zinc-500 text-xs font-mono rounded-lg">Grade Hidden</span>
-                            <span class="px-3 py-1 bg-zinc-900 border border-zinc-700 text-zinc-500 text-xs font-mono rounded-lg">Location Hidden</span>
+                            <span id="sp-grade" class="px-3 py-1 bg-zinc-900 border border-zinc-700 text-zinc-300 text-xs font-mono rounded-lg"></span>
+                            <span id="sp-loc" class="px-3 py-1 bg-zinc-900 border border-zinc-700 text-zinc-300 text-xs font-mono rounded-lg"></span>
+                            <span id="sp-tag-container" class="inline-flex items-center px-3 py-1 rounded-lg bg-zinc-800/50 border border-zinc-700 text-xs font-bold uppercase tracking-wider shadow-sm">
+                                <svg class="w-3 h-3 mr-1.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z"></path></svg>
+                                <span id="sp-tag"></span>
+                            </span>
                         </div>
                     </div>
-                    <div class="bg-zinc-950 border border-zinc-800 p-6 rounded-2xl text-center min-w-[180px]">
-                        <div class="text-xs font-mono text-zinc-500 uppercase mb-2">Verified Score</div>
-                        <div class="font-black font-mono text-5xl text-zinc-600">??<span class="text-xl font-normal text-zinc-700">/48</span></div>
-                        <div class="mt-3 px-3 py-1 bg-zinc-900 border border-zinc-800 text-zinc-500 font-mono font-bold text-xs rounded uppercase tracking-wider">Pending</div>
+                    <div id="sp-score-box" class="bg-zinc-950 border border-gold-500/30 p-6 rounded-2xl text-center shadow-gold-glow-inner min-w-[180px]">
+                        <div class="text-xs font-mono text-gold-400 uppercase mb-2">Verified Score</div>
+                        <div id="sp-score" class="font-black font-mono text-5xl text-gold-300">0<span class="text-xl font-normal text-zinc-600">/48</span></div>
+                        <div id="sp-medal" class="mt-3 px-3 py-1 bg-gold-500 text-zinc-950 font-mono font-bold text-xs rounded uppercase tracking-wider shadow-gold-glow">Medal</div>
                     </div>
                 </div>
 
                 <div>
-                    <h4 class="text-sm font-mono font-bold text-zinc-500 uppercase tracking-widest mb-6 flex items-center">
-                        <span class="w-8 h-px bg-zinc-800 mr-4"></span>Score Breakdown & Rubric Log<span class="flex-grow h-px bg-zinc-800 ml-4"></span>
+                    <h4 class="text-sm font-mono font-bold text-zinc-400 uppercase tracking-widest mb-6 flex items-center">
+                        <span class="w-8 h-px bg-zinc-700 mr-4"></span>Score Breakdown & Rubric Log<span class="flex-grow h-px bg-zinc-700 ml-4"></span>
                     </h4>
                     <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                        <div class="bg-zinc-900/50 p-4 rounded-xl border border-zinc-800/80">
-                            <div class="flex justify-between items-start mb-2"><span class="text-sm text-zinc-400 font-bold">P1: Bret3 Lemma</span><span class="font-mono text-zinc-500 font-bold">? / 8</span></div>
-                            <p class="text-xs text-zinc-600">Feedback sealed.</p>
-                        </div>
-                        <div class="bg-zinc-900/50 p-4 rounded-xl border border-zinc-800/80">
-                            <div class="flex justify-between items-start mb-2"><span class="text-sm text-zinc-400 font-bold">P2: Velocity Harmony</span><span class="font-mono text-zinc-500 font-bold">? / 8</span></div>
-                            <p class="text-xs text-zinc-600">Feedback sealed.</p>
-                        </div>
-                        <div class="bg-zinc-900/50 p-4 rounded-xl border border-zinc-800/80">
-                            <div class="flex justify-between items-start mb-2"><span class="text-sm text-zinc-400 font-bold">P3: Vieta Formulas</span><span class="font-mono text-zinc-500 font-bold">? / 8</span></div>
-                            <p class="text-xs text-zinc-600">Feedback sealed.</p>
-                        </div>
-                        <div class="bg-zinc-900/50 p-4 rounded-xl border border-zinc-800/80">
-                            <div class="flex justify-between items-start mb-2"><span class="text-sm text-zinc-400 font-bold">P4: Recurrence</span><span class="font-mono text-zinc-500 font-bold">? / 8</span></div>
-                            <p class="text-xs text-zinc-600">Feedback sealed.</p>
-                        </div>
-                        <div class="bg-zinc-900/50 p-4 rounded-xl border border-zinc-800/80">
-                            <div class="flex justify-between items-start mb-2"><span class="text-sm text-zinc-400 font-bold">P5: Board Invariant</span><span class="font-mono text-zinc-500 font-bold">? / 8</span></div>
-                            <p class="text-xs text-zinc-600">Feedback sealed.</p>
-                        </div>
-                        <div class="bg-zinc-900/50 p-4 rounded-xl border border-zinc-800/80">
-                            <div class="flex justify-between items-start mb-2"><span class="text-sm text-zinc-400 font-bold">P6: Crumlationny</span><span class="font-mono text-zinc-500 font-bold">? / 8</span></div>
-                            <p class="text-xs text-zinc-600">Feedback sealed.</p>
-                        </div>
+                        <div id="sp-p1"></div>
+                        <div id="sp-p2"></div>
+                        <div id="sp-p3"></div>
+                        <div id="sp-p4"></div>
+                        <div id="sp-p5"></div>
+                        <div id="sp-p6"></div>
                     </div>
                 </div>
             </div>
@@ -593,13 +669,13 @@
         <div class="fixed inset-0 z-10 overflow-y-auto flex items-center justify-center p-4">
             <div class="glass-panel border border-zinc-700 rounded-2xl p-6 w-full max-w-md shadow-2xl relative">
                 <h3 class="text-lg font-bold text-white mb-2">Import Encrypted Save State</h3>
-                <p class="text-xs text-zinc-400 mb-4">Paste your exported <code class="text-neonOrange-400">.txt</code> save code string below:</p>
+                <p class="text-xs text-zinc-400 mb-4">Paste your exported <code class="text-gold-400">.txt</code> save code string below:</p>
                 
-                <textarea id="import-input" rows="4" placeholder="MNR1-..." class="w-full bg-zinc-950 border border-zinc-800 rounded-xl p-3 text-xs font-mono text-neonOrange-400 focus:outline-none focus:border-orange-500/50 mb-4 resize-none"></textarea>
+                <textarea id="import-input" rows="4" placeholder="MNR1-..." class="w-full bg-zinc-950 border border-zinc-800 rounded-xl p-3 text-xs font-mono text-gold-400 focus:outline-none focus:border-gold-500/50 mb-4 resize-none"></textarea>
                 
                 <div class="flex justify-end space-x-2">
                     <button onclick="closeImportModal()" class="px-4 py-2 bg-zinc-800 text-zinc-300 hover:bg-zinc-700 text-xs font-mono rounded-lg">Cancel</button>
-                    <button onclick="processImport()" class="px-4 py-2 bg-orange-500 text-zinc-950 font-bold hover:bg-orange-400 text-xs font-mono rounded-lg">Load Save State</button>
+                    <button onclick="processImport()" class="px-4 py-2 bg-gold-500 text-zinc-950 font-bold hover:bg-gold-400 text-xs font-mono rounded-lg">Load Save State</button>
                 </div>
             </div>
         </div>
@@ -616,24 +692,24 @@
             }
         });
 
-        // HTML5 Canvas VFX Engine
-        const canvas = document.getElementById('vfx-canvas');
-        const ctx = canvas.getContext('2d');
+        // HTML5 Canvas VFX Engine Setup
+        const canvasBg = document.getElementById('vfx-canvas-bg');
+        const ctxBg = canvasBg.getContext('2d');
+        const canvasFg = document.getElementById('vfx-canvas-fg');
+        const ctxFg = canvasFg.getContext('2d');
 
-        let width = canvas.width = window.innerWidth;
-        let height = canvas.height = window.innerHeight;
+        let width, height;
+        function initCanvasSize() {
+            width = canvasBg.width = canvasFg.width = window.innerWidth;
+            height = canvasBg.height = canvasFg.height = window.innerHeight;
+        }
+        window.addEventListener('resize', initCanvasSize);
+        initCanvasSize();
 
-        window.addEventListener('resize', () => {
-            width = canvas.width = window.innerWidth;
-            height = canvas.height = window.innerHeight;
-        });
-
-        // Mouse Interactivity
         let mouse = { x: -1000, y: -1000 };
         window.addEventListener('mousemove', (e) => { mouse.x = e.clientX; mouse.y = e.clientY; });
         window.addEventListener('mouseleave', () => { mouse.x = -1000; mouse.y = -1000; });
 
-        // Floating Meniner Particle Class
         class MeninerParticle {
             constructor(x, y, isBurst = false, isChimney = false, color = null) {
                 this.isBurst = isBurst;
@@ -711,29 +787,30 @@
             }
             draw() {
                 if (this.alpha <= 0) return;
-                ctx.save();
-                ctx.font = `${this.fontSize}px UnifrakturMaguntia, serif`;
+                const targetCtx = (this.isBurst || this.isChimney) ? ctxFg : ctxBg;
+                
+                targetCtx.save();
+                targetCtx.font = `${this.fontSize}px UnifrakturMaguntia, serif`;
                 
                 if (this.isChimney) {
-                    ctx.fillStyle = this.customColor || `rgba(255, 85, 0, ${this.alpha})`;
-                    ctx.shadowBlur = 15;
-                    ctx.shadowColor = this.customColor || '#ff5500';
+                    targetCtx.fillStyle = this.customColor || `rgba(250, 204, 21, ${this.alpha})`;
+                    targetCtx.shadowBlur = 15;
+                    targetCtx.shadowColor = this.customColor || '#facc15';
                 } else if (this.isBurst) {
-                    ctx.fillStyle = `rgba(255, 119, 0, ${this.alpha})`;
-                    ctx.shadowBlur = 15;
-                    ctx.shadowColor = `rgba(255, 85, 0, ${this.alpha})`;
+                    targetCtx.fillStyle = `rgba(250, 204, 21, ${this.alpha})`;
+                    targetCtx.shadowBlur = 15;
+                    targetCtx.shadowColor = `rgba(250, 204, 21, ${this.alpha})`;
                 } else {
-                    ctx.fillStyle = `rgba(234, 179, 8, ${Math.max(0.05, Math.min(0.6, this.alpha))})`;
-                    ctx.shadowBlur = 10;
-                    ctx.shadowColor = 'rgba(234, 179, 8, 0.4)';
+                    targetCtx.fillStyle = `rgba(234, 179, 8, ${Math.max(0.05, Math.min(0.6, this.alpha))})`;
+                    targetCtx.shadowBlur = 10;
+                    targetCtx.shadowColor = 'rgba(234, 179, 8, 0.4)';
                 }
                 
-                ctx.fillText(this.char, this.x, this.y);
-                ctx.restore();
+                targetCtx.fillText(this.char, this.x, this.y);
+                targetCtx.restore();
             }
         }
 
-        // Streak Comet Class
         class GoldComet {
             constructor() { this.reset(); }
             reset() {
@@ -762,30 +839,30 @@
             }
             draw() {
                 if (!this.active) return;
-                ctx.save();
+                ctxBg.save();
                 const tailX = this.x - Math.cos(this.angle) * this.length;
                 const tailY = this.y - Math.sin(this.angle) * this.length;
 
-                const gradient = ctx.createLinearGradient(this.x, this.y, tailX, tailY);
+                const gradient = ctxBg.createLinearGradient(this.x, this.y, tailX, tailY);
                 gradient.addColorStop(0, `rgba(250, 204, 21, ${this.glow})`);
                 gradient.addColorStop(0.2, `rgba(234, 179, 8, ${this.glow * 0.5})`);
                 gradient.addColorStop(1, 'rgba(0, 0, 0, 0)');
 
-                ctx.strokeStyle = gradient;
-                ctx.lineWidth = 2.5;
-                ctx.lineCap = 'round';
-                ctx.beginPath();
-                ctx.moveTo(this.x, this.y);
-                ctx.lineTo(tailX, tailY);
-                ctx.stroke();
+                ctxBg.strokeStyle = gradient;
+                ctxBg.lineWidth = 2.5;
+                ctxBg.lineCap = 'round';
+                ctxBg.beginPath();
+                ctxBg.moveTo(this.x, this.y);
+                ctxBg.lineTo(tailX, tailY);
+                ctxBg.stroke();
 
-                ctx.fillStyle = '#fef9c3';
-                ctx.shadowBlur = 20;
-                ctx.shadowColor = '#facc15';
-                ctx.beginPath();
-                ctx.arc(this.x, this.y, 3, 0, Math.PI * 2);
-                ctx.fill();
-                ctx.restore();
+                ctxBg.fillStyle = '#fef9c3';
+                ctxBg.shadowBlur = 20;
+                ctxBg.shadowColor = '#facc15';
+                ctxBg.beginPath();
+                ctxBg.arc(this.x, this.y, 3, 0, Math.PI * 2);
+                ctxBg.fill();
+                ctxBg.restore();
             }
         }
 
@@ -804,47 +881,151 @@
             }
             draw() {
                 if (this.alpha <= 0) return;
-                ctx.save();
-                ctx.beginPath();
-                ctx.arc(this.x, this.y, this.radius, 0, Math.PI * 2);
-                ctx.strokeStyle = `rgba(255, 85, 0, ${this.alpha})`;
-                ctx.lineWidth = 2;
-                ctx.shadowBlur = 15;
-                ctx.shadowColor = `rgba(255, 85, 0, ${this.alpha})`;
-                ctx.stroke();
-                ctx.restore();
+                ctxFg.save();
+                ctxFg.beginPath();
+                ctxFg.arc(this.x, this.y, this.radius, 0, Math.PI * 2);
+                ctxFg.strokeStyle = `rgba(250, 204, 21, ${this.alpha})`;
+                ctxFg.lineWidth = 2;
+                ctxFg.shadowBlur = 15;
+                ctxFg.shadowColor = `rgba(250, 204, 21, ${this.alpha})`;
+                ctxFg.stroke();
+                ctxFg.restore();
             }
         }
 
-        // Engine State
-        let particles = Array.from({ length: 45 }, () => new MeninerParticle());
+        // Engine State Limits
+        let particles = Array.from({ length: 40 }, () => new MeninerParticle());
         let burstParticles = [];
         let chimneyParticles = [];
         let comets = Array.from({ length: 2 }, () => new GoldComet());
         let ripples = [];
         
-        let portal = { active: false, phase: 0, x: 0, y: 0, radius: 0, alpha: 0 };
+        let portal = { active: false, phase: 0, x: 0, y: 0, radius: 0, alpha: 0, theme: 'gold' };
 
-        // Global Click Event
         window.addEventListener('click', (e) => {
             if (portal.active) return;
             ripples.push(new Ripple(e.clientX, e.clientY));
+            if(ripples.length > 10) ripples = ripples.slice(-10);
+
             for(let i=0; i<15; i++) burstParticles.push(new MeninerParticle(e.clientX, e.clientY, true));
-            if(burstParticles.length > 100) burstParticles = burstParticles.slice(-100);
+            if(burstParticles.length > 40) burstParticles = burstParticles.slice(-40);
         });
 
         window.spawnBurst = function(e) {
             if (portal.active) return;
             e.stopPropagation(); 
             ripples.push(new Ripple(e.clientX, e.clientY));
+            if(ripples.length > 10) ripples = ripples.slice(-10);
+
             for(let i=0; i<20; i++) burstParticles.push(new MeninerParticle(e.clientX, e.clientY, true));
+            if(burstParticles.length > 40) burstParticles = burstParticles.slice(-40);
         };
 
-        // SEAMLESS HIGH-SPEED TELEPORTATION PORTAL
-        window.triggerPortal = function(e) {
+        // --- SCORECARD DATA ENGINE ---
+        const competitorData = {
+            'banning': {
+                name: 'the big wait what',
+                aka: 'AKA banning gran',
+                avatar: '🥇',
+                avatarBg: 'bg-gradient-to-br from-gold-400 to-amber-600',
+                grade: 'G8 (Rising G9)',
+                loc: 'Michigan, USA',
+                tag: 'AwesomeMath',
+                tagColor: 'indigo',
+                score: 45,
+                medal: 'Gold Medalist',
+                boxColor: 'border-gold-500/30 text-gold-300 shadow-gold-glow-inner',
+                medalColor: 'bg-gold-500 text-zinc-950 shadow-gold-glow',
+                p1: { score: '8 / 8', note: '+1 Bonus awarded for formal terminology.', color: 'gold' },
+                p2: { score: '7 / 8', note: '-1 Penalty: Failed to explicitly name Clites Theorem.', color: 'red' },
+                p3: { score: '8 / 8', note: '+1 Bonus awarded for Theorem 5 invocation.', color: 'gold' },
+                p4: { score: '8 / 8', note: 'Flawless telescoping sum collapse.', color: 'gold' },
+                p5: { score: '6 / 8', note: '-2 Penalty: Minor algebraic typo in written proof.', color: 'red' },
+                p6: { score: '8 / 8', note: '+1 Head Grader Override Bonus for elegant AM-GM proof.', color: 'blue' }
+            },
+            'benjamin': {
+                name: 'Benjamin60',
+                aka: 'Verified Participant',
+                avatar: '🥇',
+                avatarBg: 'bg-gradient-to-br from-gold-400 to-amber-600',
+                grade: 'G11',
+                loc: 'Ireland',
+                tag: 'Math Olympiads',
+                tagColor: 'green',
+                score: 45,
+                medal: 'Gold Medalist',
+                boxColor: 'border-gold-500/30 text-gold-300 shadow-gold-glow-inner',
+                medalColor: 'bg-gold-500 text-zinc-950 shadow-gold-glow',
+                p1: { score: '8 / 8', note: '+1 Bonus awarded. Cited Jagmag Theorem and Bret3 Lemma.', color: 'gold' },
+                p2: { score: '8 / 8', note: '+1 Bonus awarded. Applied Flat Meniner and Clites Theorem.', color: 'gold' },
+                p3: { score: '8 / 8', note: '+1 Bonus awarded. Vieta application with Bret3 Lemma.', color: 'gold' },
+                p4: { score: '7 / 8', note: '-1 Penalty: Flawless math, but no named theorem cited.', color: 'red' },
+                p5: { score: '8 / 8', note: '+1 Bonus awarded. Flawless invariant and Flat Meniner proof.', color: 'gold' },
+                p6: { score: '6 / 8', note: 'Rearrangement Inequality. -2 No boundary case, +1 Elegance override.', color: 'blue' }
+            },
+            'usamo': {
+                name: 'Melted Pie :D',
+                aka: 'Too lazy for Q1-Q3',
+                avatar: '🥉',
+                avatarBg: 'bg-gradient-to-br from-amber-700 to-amber-900 border border-amber-800 shadow-inner',
+                grade: 'G6',
+                loc: 'MA, USA',
+                tag: 'AwesomeMath',
+                tagColor: 'indigo',
+                score: 16,
+                medal: 'Bronze Medalist',
+                boxColor: 'border-amber-700/30 text-amber-600 shadow-inner bg-zinc-950',
+                medalColor: 'bg-amber-900 text-amber-500 shadow-sm border border-amber-800',
+                p1: { score: '0 / 8', note: 'Skipped - "Too lazy to solve on paper".', color: 'red' },
+                p2: { score: '0 / 8', note: 'Skipped - "Too lazy to solve on paper".', color: 'red' },
+                p3: { score: '0 / 8', note: 'Skipped - "Too lazy to solve on paper".', color: 'red' },
+                p4: { score: '8 / 8', note: 'Solved completely in head. Flawless telescoping.', color: 'gold' },
+                p5: { score: '3 / 8', note: '-3 Penalty: Calculation/execution sillies.', color: 'red' },
+                p6: { score: '5 / 8', note: '-2 Penalty: Missing equality case conditions.', color: 'red' }
+            }
+        };
+
+        const pTitles = ["Bret3 Lemma", "Velocity Harmony", "Vieta Formulas", "Recurrence", "Board Invariant", "Crumlationny"];
+
+        window.triggerPortal = function(e, compId) {
             e.preventDefault();
             e.stopPropagation();
             if (portal.active) return;
+
+            // Load Dynamic Data
+            const d = competitorData[compId];
+            if(d) {
+                document.getElementById('sp-avatar').innerText = d.avatar;
+                document.getElementById('sp-avatar').className = `w-32 h-32 ${d.avatarBg} rounded-2xl flex items-center justify-center text-6xl shadow-gold-glow flex-shrink-0 cursor-crosshair transform hover:scale-105 transition-transform`;
+                
+                document.getElementById('sp-name').innerText = d.name;
+                document.getElementById('sp-aka').innerText = d.aka;
+                document.getElementById('sp-grade').innerText = d.grade;
+                document.getElementById('sp-loc').innerText = d.loc;
+                
+                document.getElementById('sp-tag-container').className = `inline-flex items-center px-3 py-1 rounded-lg bg-${d.tagColor}-500/10 text-${d.tagColor}-400 border border-${d.tagColor}-500/30 text-xs font-bold uppercase tracking-wider shadow-sm`;
+                document.getElementById('sp-tag').innerText = d.tag;
+
+                document.getElementById('sp-score-box').className = `p-6 rounded-2xl text-center min-w-[180px] ${d.boxColor}`;
+                document.getElementById('sp-score').innerHTML = `${d.score}<span class="text-xl font-normal opacity-70">/48</span>`;
+                document.getElementById('sp-score').className = `font-black font-mono text-5xl`;
+                
+                document.getElementById('sp-medal').innerText = d.medal;
+                document.getElementById('sp-medal').className = `mt-3 px-3 py-1 font-mono font-bold text-xs rounded uppercase tracking-wider ${d.medalColor}`;
+
+                for(let i=1; i<=6; i++) {
+                    const p = d['p'+i];
+                    const el = document.getElementById('sp-p'+i);
+                    el.className = `bg-zinc-900/50 p-4 rounded-xl border transition-colors ${p.color === 'gold' ? 'border-zinc-800/80 hover:border-gold-500/30' : p.color === 'red' ? 'border-zinc-800/80 hover:border-red-500/30' : 'border-blue-500/20 hover:border-blue-500/50 relative overflow-hidden shadow-blue-glow'}`;
+                    
+                    let html = `<div class="flex justify-between items-start mb-2"><span class="text-sm text-white font-bold">P${i}: ${pTitles[i-1]}</span><span class="font-mono text-${p.color}-400 font-bold">${p.score}</span></div><p class="text-xs text-zinc-500">${p.note}</p>`;
+                    if (p.color === 'blue') {
+                        html = `<div class="absolute inset-0 bg-blue-500/5"></div><div class="relative z-10 flex justify-between items-start mb-2"><span class="text-sm text-white font-bold">P${i}: ${pTitles[i-1]}</span><span class="font-mono text-blue-400 font-bold">${p.score}</span></div><p class="text-xs text-blue-300/80 relative z-10">${p.note}</p>`;
+                    }
+                    el.innerHTML = html;
+                }
+                portal.theme = d.tagColor || 'gold';
+            }
 
             portal.active = true;
             portal.phase = 1;
@@ -852,8 +1033,6 @@
             portal.y = window.innerHeight / 2;
             portal.radius = 10;
             portal.alpha = 1;
-            
-            canvas.style.zIndex = '9999';
         };
 
         window.returnFromPortal = function(e) {
@@ -867,7 +1046,6 @@
             portal.radius = Math.max(width, height) * 1.5;
             portal.alpha = 1;
             
-            canvas.style.zIndex = '9999';
             document.getElementById('stats-page').classList.add('hidden');
             document.getElementById('main-app').classList.remove('hidden');
             window.scrollTo(0, 0);
@@ -875,17 +1053,17 @@
             portal.phase = 2;
         }
 
-        // Main Render Loop
+        // Render Loop
         function renderVFX() {
-            ctx.clearRect(0, 0, width, height);
+            ctxBg.clearRect(0, 0, width, height);
+            ctxFg.clearRect(0, 0, width, height);
 
             if (portal.active) {
-                ctx.save();
+                ctxFg.save();
                 let maxDim = Math.max(width, height);
 
                 if (portal.phase === 1) {
                     portal.radius += (maxDim * 1.5 - portal.radius) * 0.15 + 30;
-
                     if (portal.radius > maxDim * 1.2) {
                         document.getElementById('main-app').classList.add('hidden');
                         document.getElementById('stats-page').classList.remove('hidden');
@@ -895,35 +1073,49 @@
                 } else if (portal.phase === 2) {
                     portal.alpha -= 0.06;
                     portal.radius += 20;
-
                     if (portal.alpha <= 0) {
                         portal.active = false;
                         portal.phase = 0;
-                        canvas.style.zIndex = '20'; // Restore canvas z-index above cards
                     }
                 }
 
-                ctx.globalAlpha = Math.max(0, portal.alpha);
+                ctxFg.globalAlpha = Math.max(0, portal.alpha);
                 
-                let grad = ctx.createRadialGradient(portal.x, portal.y, 0, portal.x, portal.y, Math.max(1, portal.radius));
+                let color2, color3, color4;
+                if (portal.theme === 'indigo') {
+                    color2 = '#818cf8'; 
+                    color3 = 'rgba(99, 102, 241, 0.8)'; 
+                    color4 = 'rgba(139, 92, 246, 0.4)'; 
+                } else if (portal.theme === 'green') {
+                    color2 = '#4ade80'; 
+                    color3 = 'rgba(34, 197, 94, 0.8)'; 
+                    color4 = 'rgba(20, 184, 166, 0.4)'; 
+                } else {
+                    color2 = '#fde047';
+                    color3 = 'rgba(59, 130, 246, 0.8)';
+                    color4 = 'rgba(239, 68, 68, 0.4)';
+                }
+
+                let grad = ctxFg.createRadialGradient(portal.x, portal.y, 0, portal.x, portal.y, Math.max(1, portal.radius));
                 grad.addColorStop(0, '#ffffff');
-                grad.addColorStop(0.3, '#ff7700');
-                grad.addColorStop(0.6, 'rgba(59, 130, 246, 0.8)');
-                grad.addColorStop(0.8, 'rgba(239, 68, 68, 0.4)');
+                grad.addColorStop(0.3, color2);
+                grad.addColorStop(0.6, color3);
+                grad.addColorStop(0.8, color4);
                 grad.addColorStop(1, 'rgba(9, 9, 11, 0)');
                 
-                ctx.fillStyle = grad;
-                ctx.globalCompositeOperation = 'screen';
-                ctx.fillRect(0, 0, width, height);
-                ctx.globalCompositeOperation = 'source-over';
-                
-                ctx.restore();
+                ctxFg.fillStyle = grad;
+                ctxFg.globalCompositeOperation = 'screen';
+                ctxFg.fillRect(0, 0, width, height);
+                ctxFg.globalCompositeOperation = 'source-over';
+                ctxFg.restore();
             }
 
             if (!portal.active || portal.phase === 2) {
+                // Background Ambient Elements
                 particles.forEach(p => { p.update(); p.draw(); });
                 comets.forEach(c => { c.update(); c.draw(); });
 
+                // Foreground Interactive Elements
                 for (let i = burstParticles.length - 1; i >= 0; i--) {
                     let bp = burstParticles[i];
                     bp.update();
@@ -950,11 +1142,10 @@
         }
         renderVFX();
 
-        // Standard Tab Switcher Logic
         function switchTab(tabId) {
             document.querySelectorAll('.tab-content').forEach(el => el.classList.remove('active'));
             document.querySelectorAll('.tab-btn').forEach(el => {
-                el.classList.remove('bg-zinc-800/80', 'text-white', 'text-gold-400', 'text-neonOrange-400', 'shadow-inner');
+                el.classList.remove('bg-zinc-800/80', 'text-white', 'text-gold-400', 'shadow-inner');
                 el.classList.add('text-zinc-400');
             });
             document.querySelectorAll('.tab-btn-mobile').forEach(el => {
@@ -971,7 +1162,7 @@
                 if (desktopBtn) {
                     desktopBtn.classList.remove('text-zinc-400');
                     if (tabId === 'clicker') {
-                        desktopBtn.classList.add('bg-zinc-800/80', 'text-neonOrange-400', 'shadow-inner');
+                        desktopBtn.classList.add('bg-zinc-800/80', 'text-gold-400', 'shadow-inner');
                     } else {
                         desktopBtn.classList.add('bg-zinc-800/80', 'text-gold-400', 'shadow-inner');
                     }
@@ -996,11 +1187,7 @@
             notes: 0,
             totalEarned: 0,
             totalClicks: 0,
-            factories: {
-                bronze: 0,
-                silver: 0,
-                gold: 0
-            }
+            factories: { bronze: 0, silver: 0, gold: 0 }
         };
 
         const factoryData = {
@@ -1023,7 +1210,7 @@
         }
 
         function updateClickerUI() {
-            document.getElementById('notes-counter').innerHTML = `${Math.floor(gameState.notes).toLocaleString()} <span class="text-xl text-neonOrange-400 font-normal">N♮</span>`;
+            document.getElementById('notes-counter').innerHTML = `${Math.floor(gameState.notes).toLocaleString()} <span class="text-xl text-gold-400 font-normal">N♮</span>`;
             document.getElementById('nps-counter').innerText = `Production Rate: ${calculateNPS().toFixed(1)} N♮ / sec`;
             
             document.getElementById('bronze-count').innerText = `x${gameState.factories.bronze}`;
@@ -1051,7 +1238,6 @@
             gameState.totalEarned += addAmount;
             gameState.totalClicks += 1;
 
-            // Spawn floating text popup
             const textEl = document.createElement('div');
             textEl.className = 'click-text';
             textEl.innerText = `+${addAmount} N♮`;
@@ -1060,10 +1246,10 @@
             document.body.appendChild(textEl);
             setTimeout(() => textEl.remove(), 900);
 
-            // Neon Orange Burst
             for(let i=0; i<6; i++) {
                 burstParticles.push(new MeninerParticle(e.clientX, e.clientY, true));
             }
+            if(burstParticles.length > 40) burstParticles = burstParticles.slice(-40);
 
             updateClickerUI();
         }
@@ -1078,7 +1264,6 @@
             }
         }
 
-        // RENDER SEATED RECTANGULAR FACTORIES ON THE SPINNING WHEEL
         function renderSeatedFactoryRectangles() {
             const container = document.getElementById('factory-rect-container');
             container.innerHTML = '';
@@ -1086,7 +1271,6 @@
             const total = gameState.factories.bronze + gameState.factories.silver + gameState.factories.gold;
             if (total === 0) return;
 
-            // Orbit radius along perimeter of clicker
             const radius = 125; 
             let current = 0;
 
@@ -1096,7 +1280,7 @@
                 { type: 'gold', count: gameState.factories.gold, color: factoryData.gold.color, border: factoryData.gold.border, shadow: factoryData.gold.shadow }
             ];
 
-            const cap = Math.min(total, 16); // max 16 seated rectangles for visual clarity
+            const cap = Math.min(total, 16); 
 
             types.forEach(t => {
                 for (let i = 0; i < t.count && current < cap; i++) {
@@ -1104,7 +1288,6 @@
                     const x = Math.cos(angle) * radius;
                     const y = Math.sin(angle) * radius;
 
-                    // Seated Rectangle element
                     const rect = document.createElement('div');
                     rect.className = 'seated-factory-rect absolute w-9 h-5 rounded-sm bg-zinc-950 flex items-center justify-center text-[10px] font-fraktur font-bold shadow-md transform -translate-x-1/2 -translate-y-1/2 border transition-all';
                     rect.style.left = `calc(50% + ${x}px)`;
@@ -1122,11 +1305,10 @@
             });
         }
 
-        // Emit Colored Notes directly from Seated Rectangles
         function emitNotesFromRectangles() {
             const nodes = document.querySelectorAll('.seated-factory-rect');
             nodes.forEach(node => {
-                if (Math.random() < 0.35) { // periodic chance to shoot a colored note
+                if (Math.random() < 0.35) { 
                     const rect = node.getBoundingClientRect();
                     const color = node.getAttribute('data-color');
                     chimneyParticles.push(new MeninerParticle(
@@ -1138,9 +1320,9 @@
                     ));
                 }
             });
+            if(chimneyParticles.length > 40) chimneyParticles = chimneyParticles.slice(-40);
         }
 
-        // Passive Income Loop (100ms interval)
         setInterval(() => {
             const nps = calculateNPS();
             if (nps > 0) {
@@ -1152,12 +1334,8 @@
             }
         }, 100);
 
-        // Auto Save Loop (Every 3 seconds)
-        setInterval(() => {
-            saveGame(false);
-        }, 3000);
+        setInterval(() => saveGame(false), 3000);
 
-        // Encryption / Local Save Engine
         function encryptSave(data) {
             const json = JSON.stringify(data);
             return 'MNR1-' + btoa(unescape(encodeURIComponent(json)));
@@ -1172,9 +1350,7 @@
 
         function saveGame(showNotice = false) {
             localStorage.setItem('inmmo_clicker_save', JSON.stringify(gameState));
-            if (showNotice) {
-                alert("Game state saved to local browser storage!");
-            }
+            if (showNotice) alert("Game state saved to local browser storage!");
         }
 
         function loadGame() {
@@ -1184,16 +1360,13 @@
                     const parsed = JSON.parse(raw);
                     gameState = { ...gameState, ...parsed };
                     updateClickerUI();
-                } catch(e) {
-                    console.error("Failed to load save:", e);
-                }
+                } catch(e) { console.error("Failed to load save:", e); }
             }
         }
 
         function exportSave() {
             saveGame(false);
             const encryptedStr = encryptSave(gameState);
-            
             const blob = new Blob([encryptedStr], { type: 'text/plain' });
             const url = URL.createObjectURL(blob);
             const a = document.createElement('a');
@@ -1203,18 +1376,12 @@
             URL.revokeObjectURL(url);
         }
 
-        function openImportModal() {
-            document.getElementById('import-modal').classList.remove('hidden');
-        }
-
-        function closeImportModal() {
-            document.getElementById('import-modal').classList.add('hidden');
-        }
+        function openImportModal() { document.getElementById('import-modal').classList.remove('hidden'); }
+        function closeImportModal() { document.getElementById('import-modal').classList.add('hidden'); }
 
         function processImport() {
             const code = document.getElementById('import-input').value.trim();
             if (!code) return;
-
             try {
                 const loaded = decryptSave(code);
                 gameState = { ...gameState, ...loaded };
@@ -1227,7 +1394,6 @@
             }
         }
 
-        // Initialize clicker state on load
         loadGame();
     </script>
 </body>
